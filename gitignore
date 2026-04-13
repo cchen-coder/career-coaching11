@@ -1,0 +1,17 @@
+# Keep your template and credentials out of git
+BCG_CAP_Template.pptx
+*.pptx
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
