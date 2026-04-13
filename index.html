@@ -311,9 +311,9 @@ textarea.notes-field:focus{border-color:var(--text);}
     <button class="btn btn-primary" onclick="navigate('coachees')">+ Add Coachee</button>
   </div>
   <div class="metrics-row">
-    <div class="metric-card"><div class="metric-label">Active Coachees</div><div class="metric-value">5</div><div class="metric-sub up">All on 3-session track</div></div>
-    <div class="metric-card"><div class="metric-label">Sessions Today</div><div class="metric-value">4</div><div class="metric-sub">Next at 2:00 PM</div></div>
-    <div class="metric-card"><div class="metric-label">Open Action Items</div><div class="metric-value">11</div><div class="metric-sub down">2 overdue</div></div>
+    <div class="metric-card"><div class="metric-label">Active Coachees</div><div class="metric-value" id="metric-active">—</div><div class="metric-sub up">3-session programme</div></div>
+    <div class="metric-card"><div class="metric-label">Sessions This Week</div><div class="metric-value" id="metric-week">—</div><div class="metric-sub" id="metric-week-sub"></div></div>
+    <div class="metric-card"><div class="metric-label">Open Action Items</div><div class="metric-value" id="metric-cap">—</div><div class="metric-sub" id="metric-cap-sub"></div></div>
   </div>
   <div class="grid-2">
     <div class="card">
@@ -327,12 +327,8 @@ textarea.notes-field:focus{border-color:var(--text);}
   </div>
   <div class="card">
     <div class="card-title">Session Completion — All Coachees</div>
-    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px;padding-top:4px">
-      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">James Lee</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot upcoming" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--purple);margin-top:5px">Today</div></div><div style="width:24px;height:2px;background:var(--border);margin-bottom:16px"></div><div><div class="session-dot empty" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--muted);margin-top:5px">Apr 24</div></div></div></div>
-      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">Maya Reyes</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div></div></div>
-      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">Tom Park</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot upcoming" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--purple);margin-top:5px">Today</div></div><div style="width:24px;height:2px;background:var(--border);margin-bottom:16px"></div><div><div class="session-dot empty" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--muted);margin-top:5px">Apr 22</div></div></div></div>
-      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">Priya Shah</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--border);margin-bottom:16px"></div><div><div class="session-dot empty" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--muted);margin-top:5px">Apr 21</div></div></div></div>
-      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">Aisha Noor</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--border);margin-bottom:16px"></div><div><div class="session-dot upcoming" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--purple);margin-top:5px">Today</div></div></div></div>
+    <div id="dashboard-completion" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:20px;padding-top:4px">
+      <div style="color:var(--muted);font-size:13px;padding:8px">Loading…</div>
     </div>
   </div>
 </div>
@@ -428,20 +424,30 @@ textarea.notes-field:focus{border-color:var(--text);}
 <!-- SESSIONS PAGE -->
 <!-- WEEKLY CALENDAR -->
 <div class="page" id="page-calendar">
-  <div class="page-header"><div><div class="page-title">Weekly Calendar</div><div class="page-subtitle">Week of Apr 7 – 11, 2026</div></div><div style="display:flex;gap:8px"><button class="btn btn-outline">← Prev</button><button class="btn btn-outline">Next →</button></div></div>
-  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center"><span style="font-size:11px;color:var(--muted)">Legend:</span><span style="background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Completed</span><span style="background:var(--purple-light);color:var(--purple);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Upcoming</span><span style="background:var(--warn-light);color:var(--warn);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Today</span></div>
-  <div class="calendar-grid">
-    <div class="cal-header"></div><div class="cal-header">Mon 7</div><div class="cal-header">Tue 8</div><div class="cal-header">Wed 9</div><div class="cal-header">Thu 10 · today</div><div class="cal-header">Fri 11</div>
-    <div class="cal-time">9 AM</div><div class="cal-cell"><div class="cal-event done">James L. S1<br>Career pivot</div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event upcoming">James L. S2<br>Resume</div></div><div class="cal-cell"></div>
-    <div class="cal-time">10 AM</div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event done">Priya S. S1<br>Leadership</div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
-    <div class="cal-time">11 AM</div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event done">Maya R. S2<br>Promotion</div></div><div class="cal-cell"><div class="cal-event done">Maya R. S3<br>Final</div></div><div class="cal-cell"></div>
-    <div class="cal-time">12 PM</div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
-    <div class="cal-time">1 PM</div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
-    <div class="cal-time">2 PM</div><div class="cal-cell"><div class="cal-event done">Tom P. S1<br>Job search</div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event pending">Tom P. S2<br>Interviews</div></div><div class="cal-cell"></div>
-    <div class="cal-time">3 PM</div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event done">Priya S. S2<br>Delegation</div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
-    <div class="cal-time">4 PM</div><div class="cal-cell"><div class="cal-event done">Aisha N. S1<br>Exec</div></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event done">Aisha N. S2<br>Board prep</div></div><div class="cal-cell"><div class="cal-event pending">Aisha N. S3<br>Final</div></div><div class="cal-cell"></div>
+  <div class="page-header">
+    <div><div class="page-title">Weekly Calendar</div><div class="page-subtitle" id="cal-subtitle"></div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="calNav(-1)">← Prev</button>
+      <button class="btn btn-outline" onclick="calNav(0)">Today</button>
+      <button class="btn btn-outline" onclick="calNav(1)">Next →</button>
+    </div>
   </div>
-  <div style="margin-top:24px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:12px">This week at a glance</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px"><div class="metric-card"><div class="metric-label">Total Sessions</div><div class="metric-value" style="font-size:24px">9</div></div><div class="metric-card"><div class="metric-label">Completed</div><div class="metric-value" style="font-size:24px;color:var(--accent)">6</div></div><div class="metric-card"><div class="metric-label">Upcoming</div><div class="metric-value" style="font-size:24px;color:var(--purple)">1</div></div><div class="metric-card"><div class="metric-label">Today</div><div class="metric-value" style="font-size:24px;color:var(--warn)">2</div></div></div></div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+    <span style="font-size:11px;color:var(--muted)">Legend:</span>
+    <span style="background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Completed</span>
+    <span style="background:var(--purple-light);color:var(--purple);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Upcoming</span>
+    <span style="background:var(--warn-light);color:var(--warn);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Today</span>
+  </div>
+  <div id="calendar-grid-wrap"></div>
+  <div style="margin-top:24px">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:12px">This week at a glance</div>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+      <div class="metric-card"><div class="metric-label">Total Sessions</div><div class="metric-value" style="font-size:24px" id="cal-total">—</div></div>
+      <div class="metric-card"><div class="metric-label">Completed</div><div class="metric-value" style="font-size:24px;color:var(--accent)" id="cal-done">—</div></div>
+      <div class="metric-card"><div class="metric-label">Upcoming</div><div class="metric-value" style="font-size:24px;color:var(--purple)" id="cal-upcoming">—</div></div>
+      <div class="metric-card"><div class="metric-label">Today</div><div class="metric-value" style="font-size:24px;color:var(--warn)" id="cal-today-count">—</div></div>
+    </div>
+  </div>
 </div>
 
 
@@ -826,50 +832,130 @@ const actionState = {};
 
 // ============ NAVIGATION ============
 const navMap = {dashboard:0,coachees:1,calendar:2,resources:3};
+let calWeekOffset = 0; // 0 = current week
 
-// Today's sessions data — pulled from profiles.sessionList
-// Each entry: {profileId, sessionNum, name, bg, color, initials, goal, time, status, meetUrl}
-const todaySessions = [
-  {profileId:'james', sessionNum:2, name:'James Lee', bg:'#F3F0FF', color:'#5B21B6', initials:'JL', goal:'Career pivot', time:'9:00 AM', statusLabel:'Upcoming', statusClass:'badge-purple', meetUrl:'https://meet.google.com/abc-defg-hij'},
-  {profileId:'maya',  sessionNum:3, name:'Maya Reyes', bg:'#EAF0E1', color:'#2D5016', initials:'MR', goal:'Promotion prep', time:'11:00 AM', statusLabel:'Done', statusClass:'badge-green', meetUrl:'https://meet.google.com/bcd-efgh-ijk'},
-  {profileId:'tom',   sessionNum:2, name:'Tom Park', bg:'#FFFBEB', color:'#92400E', initials:'TP', goal:'Job search', time:'2:00 PM', statusLabel:'In 2h', statusClass:'badge-amber', meetUrl:'https://meet.google.com/cde-fghi-jkl'},
-  {profileId:'aisha', sessionNum:3, name:'Aisha Noor', bg:'#EFF6FF', color:'#1E40AF', initials:'AN', goal:'Executive presence', time:'4:30 PM', statusLabel:'Later', statusClass:'badge-amber', meetUrl:'https://meet.google.com/efg-hijk-lmn'}
-];
+// ── Date utilities ────────────────────────────────────────────────────────────
+function parseDate(str) {
+  if(!str) return null;
+  // Try ISO: 2026-04-10
+  let d = new Date(str);
+  if(!isNaN(d)) { d.setHours(0,0,0,0); return d; }
+  // Try "Apr 10" or "Apr 10, 2026"
+  d = new Date(str + (str.match(/\d{4}/) ? '' : ' 2026'));
+  if(!isNaN(d)) { d.setHours(0,0,0,0); return d; }
+  return null;
+}
+
+function isoDate(d) {
+  return d.toISOString().slice(0,10);
+}
+
+function weekStart(offset) {
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const day = now.getDay(); // 0=Sun
+  const mon = new Date(now);
+  mon.setDate(now.getDate() - (day === 0 ? 6 : day - 1) + offset * 7);
+  return mon;
+}
+
+// ── Build session event list from profiles ────────────────────────────────────
+function allSessionEvents() {
+  const events = [];
+  Object.keys(profiles).forEach(id => {
+    const p = profiles[id];
+    [p.s1date, p.s2date, p.s3date].forEach((dateStr, i) => {
+      const d = parseDate(dateStr);
+      if(!d) return;
+      events.push({
+        date: d,
+        dateStr: isoDate(d),
+        sessionNum: i + 1,
+        name: p.name,
+        initials: p.initials,
+        bg: p.bg,
+        color: p.color,
+        goal: p.goal,
+        status: p.sessionProgress[i]?.status || 'empty',
+        meetUrl: p.sessionList[i]?.meetUrl || '',
+        time: p.sessionList[i]?.time || '',
+        profileId: id,
+      });
+    });
+  });
+  return events;
+}
 
 function renderDashboard() {
   // ── Live date & greeting ──────────────────────────
   const now = new Date();
+  const todayISO = isoDate(now);
   const hour = now.getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   const dayName = now.toLocaleDateString('en-SG', {weekday:'long'});
   const dateStr = now.toLocaleDateString('en-SG', {day:'numeric', month:'short', year:'numeric'});
-  // ISO week number
   const startOfYear = new Date(now.getFullYear(), 0, 1);
   const weekNum = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
   const greetEl = document.getElementById('dashboard-greeting');
   const dateEl = document.getElementById('dashboard-date');
   if(greetEl) greetEl.textContent = greeting;
   if(dateEl) dateEl.textContent = `${dayName}, ${dateStr} · Week ${weekNum}`;
+
+  // ── Metrics from Notion profiles ─────────────────
+  const allProfiles = Object.values(profiles);
+  const activeCount = allProfiles.filter(p => (p.status||'').toLowerCase() === 'active').length;
+  const events = allSessionEvents();
+  const wStart = weekStart(0);
+  const wEnd = new Date(wStart); wEnd.setDate(wStart.getDate() + 6);
+  const thisWeekEvents = events.filter(e => e.date >= wStart && e.date <= wEnd);
+  const todayEvents = events.filter(e => e.dateStr === todayISO);
+
+  const metricActive = document.getElementById('metric-active');
+  const metricWeek = document.getElementById('metric-week');
+  const metricWeekSub = document.getElementById('metric-week-sub');
+  if(metricActive) metricActive.textContent = activeCount || allProfiles.length;
+  if(metricWeek) metricWeek.textContent = thisWeekEvents.length;
+  if(metricWeekSub) metricWeekSub.textContent = todayEvents.length ? `${todayEvents.length} today` : 'No sessions today';
+
+  // ── Session Completion ────────────────────────────
+  const compEl = document.getElementById('dashboard-completion');
+  if(compEl && allProfiles.length) {
+    compEl.innerHTML = allProfiles.map(p => {
+      const dots = p.sessionProgress.map((s,i) => {
+        const lineColor = s.status==='done' ? 'var(--accent)' : 'var(--border)';
+        const line = i > 0 ? `<div style="width:24px;height:2px;background:${lineColor};margin-bottom:16px"></div>` : '';
+        const label = s.status==='done' ? `<div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div>`
+          : s.status==='upcoming' ? `<div style="font-size:10px;color:var(--purple);margin-top:5px">${s.label||'TBC'}</div>`
+          : `<div style="font-size:10px;color:var(--muted);margin-top:5px">${s.label||'TBC'}</div>`;
+        return `${line}<div><div class="session-dot ${s.status}" style="width:36px;height:36px;font-size:12px;margin:0 auto">${s.num}</div>${label}</div>`;
+      }).join('');
+      return `<div style="text-align:center"><div style="font-size:12px;font-weight:500;margin-bottom:10px;color:var(--text)">${p.name.split(' ')[0]}</div><div style="display:flex;align-items:center;justify-content:center">${dots}</div></div>`;
+    }).join('');
+  }
+
   // ── Today's Sessions ──────────────────────────────
+  const todaySessions = todayEvents;
   const sessEl = document.getElementById('dashboard-sessions');
   if(sessEl) {
-    sessEl.innerHTML = todaySessions.map(s => `
-      <div class="session-item">
-        <div class="avatar" style="background:${s.bg};color:${s.color}">${s.initials}</div>
-        <div class="session-info">
-          <div class="session-name">${s.name}</div>
-          <div class="session-meta">${s.goal} · Session ${s.sessionNum} of 3 · ${s.time}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-          <span class="badge ${s.statusClass}">${s.statusLabel}</span>
-          ${s.meetUrl ? `
-            <a href="${s.meetUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--info);text-decoration:none;background:var(--info-light);transition:background 0.15s" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='var(--info-light)'">
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="10" height="8" rx="1.5"/><path d="M11 7l4-2v6l-4-2"/></svg>
-              Join
-            </a>` : ''}
-        </div>
-      </div>
-    `).join('');
+    if(todaySessions.length === 0) {
+      sessEl.innerHTML = `<div style="font-size:13px;color:var(--muted);padding:8px 0;text-align:center">No sessions today</div>`;
+    } else {
+      sessEl.innerHTML = todaySessions.map(s => {
+        const statusClass = s.status==='done'?'badge-green':s.status==='upcoming'?'badge-purple':'badge-amber';
+        const statusLabel = s.status==='done'?'Done':s.status==='upcoming'?'Upcoming':'Scheduled';
+        return `<div class="session-item">
+          <div class="avatar" style="background:${s.bg};color:${s.color}">${s.initials}</div>
+          <div class="session-info">
+            <div class="session-name">${s.name}</div>
+            <div class="session-meta">${s.goal} · Session ${s.sessionNum} of 3${s.time?' · '+s.time:''}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <span class="badge ${statusClass}">${statusLabel}</span>
+            ${s.meetUrl ? `<a href="${s.meetUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--info);text-decoration:none;background:var(--info-light)"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="10" height="8" rx="1.5"/><path d="M11 7l4-2v6l-4-2"/></svg>Join</a>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    }
   }
 
   // ── Action Items Due (CAP) ─────────────────────────
@@ -879,15 +965,6 @@ function renderDashboard() {
 
   const today = new Date();
   today.setHours(0,0,0,0);
-
-  function parseSessionDate(dateStr) {
-    // dateStr format: 'Mar 20', 'Apr 10', 'Apr 24' etc. — assume current year
-    if(!dateStr || dateStr === '—') return null;
-    const d = new Date(dateStr + ' ' + today.getFullYear());
-    if(isNaN(d)) return null;
-    d.setHours(0,0,0,0);
-    return d;
-  }
 
   const overdueCAPItems = [];
   Object.keys(profiles).forEach(id => {
@@ -899,7 +976,7 @@ function renderDashboard() {
     ];
     capDefs.forEach(item => {
       if(actionState[item.actionId]) return; // already sent — skip
-      const sessionDate = parseSessionDate(item.dateStr);
+      const sessionDate = parseDate(item.dateStr);
       if(!sessionDate) return; // no date — skip
       if(sessionDate < today) { // session is in the past and CAP not yet sent
         const daysOverdue = Math.floor((today - sessionDate) / 86400000);
@@ -912,6 +989,12 @@ function renderDashboard() {
 
   // Sort by most overdue first
   overdueCAPItems.sort((a,b) => b.daysOverdue - a.daysOverdue);
+
+  // Update CAP metric
+  const metricCap = document.getElementById('metric-cap');
+  const metricCapSub = document.getElementById('metric-cap-sub');
+  if(metricCap) metricCap.textContent = overdueCAPItems.length;
+  if(metricCapSub) metricCapSub.innerHTML = overdueCAPItems.length ? `<span style="color:var(--danger)">${overdueCAPItems.length} overdue</span>` : 'All clear ✓';
 
   if(overdueCAPItems.length === 0) {
     capEl.innerHTML = `<div style="font-size:13px;color:var(--muted);padding:8px 0;text-align:center">No overdue CAPs ✓</div>`;
@@ -977,6 +1060,97 @@ function navigate(page) {
   if(el) el.classList.add('active');
   if(navMap[page]!==undefined) document.querySelectorAll('.nav-item')[navMap[page]].classList.add('active');
   if(page==='dashboard') renderDashboard();
+  if(page==='calendar') renderCalendar();
+}
+
+function calNav(dir) {
+  if(dir === 0) calWeekOffset = 0;
+  else calWeekOffset += dir;
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const HOURS = [9,10,11,12,13,14,15,16,17];
+  const DAY_LABELS = ['Mon','Tue','Wed','Thu','Fri'];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayISO = isoDate(today);
+
+  const mon = weekStart(calWeekOffset);
+  const days = Array.from({length:5}, (_,i) => {
+    const d = new Date(mon); d.setDate(mon.getDate()+i); return d;
+  });
+
+  const wEnd = new Date(mon); wEnd.setDate(mon.getDate()+4);
+  const subtitle = `Week of ${mon.toLocaleDateString('en-SG',{day:'numeric',month:'short'})} – ${wEnd.toLocaleDateString('en-SG',{day:'numeric',month:'short',year:'numeric'})}`;
+  const subEl = document.getElementById('cal-subtitle');
+  if(subEl) subEl.textContent = subtitle;
+
+  // Build event map: dateISO -> [events]
+  const eventMap = {};
+  allSessionEvents().forEach(e => {
+    if(!eventMap[e.dateStr]) eventMap[e.dateStr] = [];
+    eventMap[e.dateStr].push(e);
+  });
+
+  // Grid header
+  let html = `<div class="calendar-grid">`;
+  html += `<div class="cal-header"></div>`;
+  days.forEach((d,i) => {
+    const dISO = isoDate(d);
+    const isToday = dISO === todayISO;
+    html += `<div class="cal-header">${DAY_LABELS[i]} ${d.getDate()}${isToday?' · <strong>today</strong>':''}</div>`;
+  });
+
+  // Time rows
+  HOURS.forEach(h => {
+    const label = h < 12 ? `${h} AM` : h === 12 ? '12 PM' : `${h-12} PM`;
+    html += `<div class="cal-time">${label}</div>`;
+    days.forEach(d => {
+      const dISO = isoDate(d);
+      const evs = (eventMap[dISO]||[]).filter(e => {
+        if(!e.time) return false;
+        const hh = parseInt(e.time);
+        return hh === h;
+      });
+      if(evs.length) {
+        const e = evs[0];
+        const cls = e.status==='done'?'done':dISO===todayISO?'today':'upcoming';
+        const short = e.name.split(' ').map((w,i)=>i<2?w[0]:null).filter(Boolean).join('')+'. S'+e.sessionNum;
+        html += `<div class="cal-cell"><div class="cal-event ${cls}" onclick="showProfile('${e.profileId}')" style="cursor:pointer" title="${e.name} — Session ${e.sessionNum}">${short}<br>${e.goal||''}</div></div>`;
+      } else {
+        // Events without time — show on first hour slot of that day
+        const untimedEvs = (eventMap[dISO]||[]).filter(e => !e.time);
+        if(h === HOURS[0] && untimedEvs.length) {
+          const e = untimedEvs[0];
+          const cls = e.status==='done'?'done':dISO===todayISO?'today':'upcoming';
+          const short = e.name.split(' ').map((w,i)=>i<2?w[0]:null).filter(Boolean).join('')+'. S'+e.sessionNum;
+          html += `<div class="cal-cell"><div class="cal-event ${cls}" onclick="showProfile('${e.profileId}')" style="cursor:pointer">${short}<br>${e.goal||''}</div></div>`;
+        } else {
+          html += `<div class="cal-cell"></div>`;
+        }
+      }
+    });
+  });
+  html += `</div>`;
+
+  const wrap = document.getElementById('calendar-grid-wrap');
+  if(wrap) wrap.innerHTML = html;
+
+  // Summary stats
+  const weekEvs = Object.entries(eventMap).filter(([k]) => {
+    const d = parseDate(k);
+    return d && d >= mon && d <= wEnd;
+  }).flatMap(([,v])=>v);
+
+  const total = weekEvs.length;
+  const done = weekEvs.filter(e=>e.status==='done').length;
+  const upcoming = weekEvs.filter(e=>e.status==='upcoming').length;
+  const todayCount = (eventMap[todayISO]||[]).length;
+
+  ['cal-total','cal-done','cal-upcoming','cal-today-count'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = [total,done,upcoming,todayCount][i];
+  });
 }
 
 function showProfile(id) {
@@ -1735,9 +1909,11 @@ async function loadCoacheesFromNotion() {
     if(subtitle) subtitle.textContent = `${data.coachees.length} coachees`;
 
     renderDashboard();
+    renderCalendar();
   } catch(e) {
     listEl.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px">Could not load from Notion: ${e.message}<br><span style="font-size:11px">Make sure cap_server.py is running on port 5050.</span></div>`;
     renderDashboard();
+    renderCalendar();
   }
 }
 
