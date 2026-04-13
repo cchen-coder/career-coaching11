@@ -42,9 +42,9 @@ MAKE_WEBHOOK_SESSION_DONE   = ""   # paste your Make.com URL here
 # Get token at: https://www.notion.so/my-integrations
 # Get database IDs from the Notion URL (32-char string before ?v=)
 
-NOTION_TOKEN       = ""   # secret_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-NOTION_COACHEES_DB = ""   # 32-char database ID for Coachees
-NOTION_SESSIONS_DB = ""   # 32-char database ID for Sessions
+NOTION_TOKEN       = os.environ.get("NOTION_TOKEN", "")
+NOTION_COACHEES_DB = os.environ.get("NOTION_COACHEES_DB", "33ea644efe8b80e0b302de888b863208")
+NOTION_SESSIONS_DB = os.environ.get("NOTION_SESSIONS_DB", "33ea644efe8b80a5b85befdbdd74b720")
 NOTION_API         = "https://api.notion.com/v1"
 
 
@@ -114,10 +114,6 @@ def fetch_coachee_from_notion(coachee_name):
 
     # Fetch related sessions
     sessions_body = {
-        "filter": {
-            "property": "Coachee Name",
-            "rich_text": {"equals": coachee_name}
-        },
         "sorts": [{"property": "Session Number", "direction": "ascending"}]
     }
     sessions_result = notion_request("POST", f"/databases/{NOTION_SESSIONS_DB}/query", sessions_body)

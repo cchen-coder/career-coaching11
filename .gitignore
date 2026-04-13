@@ -1,6 +1,9 @@
 # macOS
 .DS_Store
 
+# Secrets
+Python/.env
+
 # Logs
 Python/cap_server.log
 
