@@ -1,881 +1,1655 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CoachHub — Career Coaching Dashboard</title>
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --sidebar-bg: #0f172a;
-      --sidebar-text: #94a3b8;
-      --sidebar-active: #3b82f6;
-      --card-bg: #ffffff;
-      --border: #e2e8f0;
-      --fg: #1e293b;
-      --fg-muted: #64748b;
-      --accent: #3b82f6;
-      --accent-light: #eff6ff;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --radius: 12px;
-      --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Career Coaching Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F7F5F0;--surface:#FFFFFF;--surface2:#F0EDE6;--border:#E2DDD4;
+  --text:#1A1814;--muted:#7A7468;--accent:#2D5016;--accent-light:#EAF0E1;
+  --danger:#B91C1C;--danger-light:#FEF2F2;--warn:#92400E;--warn-light:#FFFBEB;
+  --info:#1E40AF;--info-light:#EFF6FF;--purple:#5B21B6;--purple-light:#F3F0FF;
+  --radius:10px;--radius-sm:6px;--sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px;}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--text);min-height:100vh;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-logo .wordmark{font-family:'DM Serif Display',serif;font-size:17px;color:#fff;line-height:1.2;}
+.sidebar-logo .sub{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;}
+.sidebar-nav{padding:16px 12px;flex:1;display:flex;flex-direction:column;gap:2px;}
+.nav-section{font-size:9px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.1em;padding:12px 10px 4px;font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);color:rgba(255,255,255,0.5);cursor:pointer;font-size:13px;font-weight:400;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);}
+.nav-item.active{background:rgba(255,255,255,0.12);color:#fff;font-weight:500;}
+.nav-icon{width:16px;height:16px;opacity:0.7;flex-shrink:0;}
+.nav-item.active .nav-icon{opacity:1;}
+.sidebar-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,0.08);}
+.coach-badge{display:flex;align-items:center;gap:10px;padding:8px 10px;}
+.coach-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;}
+.coach-name{font-size:12px;color:rgba(255,255,255,0.7);font-weight:500;}
+.coach-role{font-size:10px;color:rgba(255,255,255,0.35);}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
+/* MAIN */
+.main{flex:1;overflow:auto;}
+.page{display:none;padding:32px 36px;}
+.page.active{display:block;}
+.board-page{display:none;padding:24px 28px;}
+.board-page.active{display:block;}
 
-    /* ── Sidebar ── */
-    .sidebar {
-      width: 232px;
-      background: var(--sidebar-bg);
-      display: flex;
-      flex-direction: column;
-      padding: 24px 0;
-      flex-shrink: 0;
-    }
-    .sidebar-logo {
-      padding: 0 20px 20px;
-      border-bottom: 1px solid #1e293b;
-      margin-bottom: 12px;
-    }
-    .sidebar-logo h1 { font-size: 16px; font-weight: 700; color: #f1f5f9; letter-spacing: -.3px; }
-    .sidebar-logo p  { font-size: 11px; color: var(--sidebar-text); margin-top: 2px; }
+/* PAGE HEADER */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;}
+.page-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);line-height:1.1;}
+.page-subtitle{font-size:13px;color:var(--muted);margin-top:4px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.btn-primary{background:var(--text);color:#fff;}
+.btn-primary:hover{background:#2d2a25;}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-outline:hover{background:var(--surface2);}
+.btn-sm{padding:5px 12px;font-size:12px;}
 
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 20px;
-      color: var(--sidebar-text);
-      cursor: pointer;
-      font-size: 14px;
-      transition: all .15s;
-      border-left: 3px solid transparent;
-    }
-    .nav-item:hover { background: #1e293b; color: #f1f5f9; }
-    .nav-item.active { background: #1e293b; color: #f1f5f9; border-left-color: var(--sidebar-active); }
-    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+/* METRICS */
+.metrics-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:24px;}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.metric-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+.metric-value{font-family:'DM Serif Display',serif;font-size:32px;color:var(--text);line-height:1;}
+.metric-sub{font-size:11px;color:var(--muted);margin-top:5px;}
+.metric-sub.up{color:var(--accent);}
+.metric-sub.down{color:var(--danger);}
 
-    /* ── Main ── */
-    .main { flex: 1; overflow-y: auto; padding: 32px; }
-    .page { display: none; }
-    .page.active { display: block; }
+/* GRID */
+.grid-2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr);gap:16px;margin-bottom:16px;}
 
-    .page-header { margin-bottom: 28px; }
-    .page-header h2 { font-size: 22px; font-weight: 700; letter-spacing: -.4px; }
-    .page-header p  { font-size: 14px; color: var(--fg-muted); margin-top: 4px; }
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:16px;}
 
-    /* ── Cards ── */
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
-    .card-title { font-size: 12px; font-weight: 700; color: var(--fg-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 14px; }
+/* BADGES */
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;letter-spacing:0.03em;}
+.badge-green{background:var(--accent-light);color:var(--accent);}
+.badge-amber{background:var(--warn-light);color:var(--warn);}
+.badge-red{background:var(--danger-light);color:var(--danger);}
+.badge-blue{background:var(--info-light);color:var(--info);}
+.badge-purple{background:var(--purple-light);color:var(--purple);}
+.badge-gray{background:var(--surface2);color:var(--muted);}
 
-    /* ── Grid ── */
-    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+/* CAP UPLOAD ZONE */
+.upload-zone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s;background:var(--bg);}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:var(--accent-light);}
+.upload-zone input[type=file]{display:none;}
+.upload-zone-icon{width:32px;height:32px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.upload-zone-label{font-size:13px;font-weight:500;color:var(--text);}
+.upload-zone-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.upload-file-chip{display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:8px 12px;margin-top:10px;}
+.upload-file-name{font-size:12px;color:var(--text);font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.upload-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:0;flex-shrink:0;}
+.upload-remove:hover{color:var(--danger);}
+.cap-section{margin-top:0;}
+.cap-output{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-top:12px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;}
+.cap-output h3{font-size:13px;font-weight:600;color:var(--text);margin:12px 0 6px;text-transform:uppercase;letter-spacing:0.05em;font-size:10px;}
+.cap-output h3:first-child{margin-top:0;}
+.cap-output p{margin-bottom:6px;}
+.cap-output ul{padding-left:16px;margin-bottom:6px;}
+.cap-output li{margin-bottom:3px;}
+.ai-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;font-family:'DM Sans',sans-serif;background:var(--accent);color:#fff;width:100%;justify-content:center;margin-top:10px;}
+.ai-btn:hover{background:#1e3a0f;}
+.ai-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+.ai-thinking{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding:12px 0;}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.2s ease-in-out infinite;}
+.ai-dot:nth-child(2){animation-delay:0.2s;}
+.ai-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes pulse{0%,80%,100%{opacity:0.3;transform:scale(0.9);}40%{opacity:1;transform:scale(1.1);}}
+.cap-tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--border);}
+.cap-tab{padding:8px 16px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s;}
+.cap-tab.active{color:var(--text);border-bottom-color:var(--text);}
+.cap-tab:hover{color:var(--text);}
+.cap-panel{display:none;}
+.cap-panel.active{display:block;}
 
-    /* ── Metric cards ── */
-    .metric-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
-    .metric-icon  { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-    .metric-label { font-size: 11px; font-weight: 700; color: var(--fg-muted); text-transform: uppercase; letter-spacing: .6px; }
-    .metric-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; margin: 4px 0 2px; }
-    .metric-sub   { font-size: 12px; color: var(--fg-muted); }
+/* SESSION ITEMS */
+.session-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.session-item:last-child{border-bottom:none;padding-bottom:0;}
+.session-item:first-child{padding-top:0;}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
+.session-info{flex:1;min-width:0;}
+.session-name{font-size:13px;font-weight:500;color:var(--text);}
+.session-meta{font-size:11px;color:var(--muted);margin-top:1px;}
 
-    /* ── Badge ── */
-    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
-    .badge-blue   { background: #dbeafe; color: #1d4ed8; }
-    .badge-green  { background: #d1fae5; color: #065f46; }
-    .badge-yellow { background: #fef3c7; color: #92400e; }
-    .badge-red    { background: #fee2e2; color: #991b1b; }
-    .badge-gray   { background: #f1f5f9; color: #475569; }
-    .badge-purple { background: #ede9fe; color: #5b21b6; }
+/* ACTION ITEMS */
+.action-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.action-item:last-child{border-bottom:none;padding-bottom:0;}
+.action-item:first-child{padding-top:0;}
+.checkbox{width:15px;height:15px;border:1.5px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:1px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.checkbox:hover{border-color:var(--accent);}
+.checkbox.checked{background:var(--accent);border-color:var(--accent);}
+.action-text{font-size:13px;color:var(--text);line-height:1.4;}
+.action-text.done-text{text-decoration:line-through;color:var(--muted);}
+.action-due{font-size:11px;color:var(--muted);margin-top:2px;}
+.action-due.overdue{color:var(--danger);font-weight:500;}
 
-    /* ── Progress bar ── */
-    .progress-bar  { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+/* SESSION DOTS */
+.session-dot{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;border:2px solid var(--border);background:var(--surface2);color:var(--muted);flex-shrink:0;}
+.session-dot.done{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+.session-dot.upcoming{background:var(--purple-light);border-color:var(--purple);color:var(--purple);}
+.session-dot.empty{background:var(--surface2);border-color:var(--border);color:var(--muted);}
 
-    /* ── Buttons ── */
-    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #2563eb; }
-    .btn-ghost { background: transparent; color: var(--fg-muted); border: 1px solid var(--border); }
-    .btn-ghost:hover { background: var(--bg); color: var(--fg); }
+/* SEARCH */
+.search-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.search-input{flex:1;padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;}
+.search-input:focus{border-color:var(--text);}
+.filter-btn{padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;background:var(--surface);color:var(--muted);cursor:pointer;}
+.filter-btn.active{background:var(--text);color:#fff;border-color:var(--text);}
 
-    /* ── Input ── */
-    .input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--fg); background: #fff; outline: none; width: 100%; }
-    .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+/* COACHEE LIST */
+.coachee-list{display:flex;flex-direction:column;gap:10px;}
+.coachee-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:border-color 0.15s;}
+.coachee-row:hover{border-color:var(--text);}
+.coachee-main{flex:1;min-width:0;}
+.coachee-row-name{font-size:14px;font-weight:500;color:var(--text);}
+.coachee-row-role{font-size:12px;color:var(--muted);margin-top:2px;}
 
-    /* ── Avatar ── */
-    .avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; flex-shrink: 0; }
+/* PROFILE */
+.profile-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;gap:20px;align-items:flex-start;margin-bottom:16px;}
+.profile-avatar{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;flex-shrink:0;}
+.profile-name{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);}
+.profile-role{font-size:13px;color:var(--muted);margin-top:3px;}
+.profile-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.profile-meta{display:flex;gap:24px;margin-top:12px;}
+.profile-meta-item{font-size:12px;color:var(--muted);}
+.profile-meta-item strong{color:var(--text);font-weight:500;display:block;font-size:13px;}
 
-    /* ── Coachee list ── */
-    .search-bar    { display: flex; gap: 8px; margin-bottom: 20px; }
-    .coachee-list  { display: flex; flex-direction: column; gap: 10px; }
-    .coachee-card  {
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 14px 18px; display: flex; align-items: center; gap: 16px;
-      cursor: pointer; box-shadow: var(--shadow); transition: all .15s;
-    }
-    .coachee-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); transform: translateY(-1px); }
-    .coachee-name  { font-size: 15px; font-weight: 600; }
-    .coachee-role  { font-size: 12px; color: var(--fg-muted); margin-top: 2px; }
-    .coachee-prog  { width: 150px; }
-    .prog-label    { display: flex; justify-content: space-between; font-size: 11px; color: var(--fg-muted); margin-bottom: 4px; }
+/* SESSION CARDS */
+.session-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
+.session-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.session-card-name{font-size:13px;font-weight:500;}
+.session-card-notes{font-size:12px;color:var(--muted);line-height:1.5;}
+.session-card-next{font-size:12px;color:var(--accent);margin-top:6px;font-weight:500;}
 
-    /* ── Today items ── */
-    .today-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); }
-    .today-row:last-child { border-bottom: none; }
-    .today-time { font-size: 12px; font-weight: 700; color: var(--accent); width: 46px; flex-shrink: 0; }
+/* CALENDAR */
+.calendar-grid{display:grid;grid-template-columns:60px repeat(5,minmax(0,1fr));gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface);}
+.cal-header{background:var(--surface2);padding:10px 8px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);border-bottom:1px solid var(--border);}
+.cal-time{padding:8px;font-size:10px;color:var(--muted);text-align:right;border-right:1px solid var(--border);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:flex-start;justify-content:flex-end;}
+.cal-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);height:52px;padding:3px;}
+.cal-cell:last-child{border-right:none;}
+.cal-event{border-radius:4px;padding:3px 6px;font-size:10px;font-weight:500;line-height:1.3;height:calc(100% - 6px);display:flex;flex-direction:column;justify-content:center;}
+.cal-event.done{background:var(--accent-light);color:var(--accent);}
+.cal-event.upcoming{background:var(--purple-light);color:var(--purple);}
+.cal-event.pending{background:var(--warn-light);color:var(--warn);}
 
-    /* ── Action items ── */
-    .action-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .action-row:last-child { border-bottom: none; }
-    .chk {
-      width: 17px; height: 17px; border: 2px solid var(--border); border-radius: 4px;
-      cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all .15s;
-    }
-    .chk.done { background: var(--success); border-color: var(--success); }
-    .chk.done::after { content:''; width:9px; height:5px; border:2px solid #fff; border-top:none; border-right:none; transform:rotate(-45deg) translateY(-1px); display:block; }
-    .action-title-text { flex: 1; font-size: 13px; }
-    .action-title-text.done { text-decoration: line-through; color: var(--fg-muted); }
+/* RESUME PREVIEW */
+.resume-preview-frame{width:100%;height:420px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);}
+.resume-chip{display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:8px 12px;margin-top:10px;}
+.resume-chip-name{font-size:12px;color:var(--text);font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.resume-chip-actions{display:flex;gap:6px;flex-shrink:0;}
+.resume-chip-btn{font-size:11px;font-weight:500;color:var(--info);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;}
+.resume-chip-btn.remove{color:var(--muted);}
+.resume-chip-btn.remove:hover{color:var(--danger);}
 
-    /* ── Weekly calendar ── */
-    .week-nav   { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .week-label { font-size: 15px; font-weight: 600; min-width: 220px; text-align: center; }
-    .week-grid  { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-    .day-col    { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; min-height: 280px; }
-    .day-header { text-align: center; margin-bottom: 12px; }
-    .day-name   { font-size: 10px; font-weight: 700; color: var(--fg-muted); text-transform: uppercase; letter-spacing: .5px; }
-    .day-num    { font-size: 20px; font-weight: 700; margin-top: 3px; }
-    .day-col.today .day-num {
-      background: var(--accent); color: #fff;
-      width: 30px; height: 30px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 3px auto 0; font-size: 13px;
-    }
-    .ses-chip { background: var(--accent-light); border: 1px solid #bfdbfe; border-radius: 7px; padding: 7px 8px; margin-bottom: 5px; font-size: 11px; cursor: pointer; }
-    .ses-chip:hover { background: #dbeafe; }
-    .ses-time { font-weight: 700; color: var(--accent); }
-    .ses-who  { color: var(--fg); margin-top: 1px; }
+/* RESOURCE LINKS */
+.resource-link{display:block;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);text-decoration:none;transition:border-color 0.15s,background 0.15s;}
+.resource-link:hover{border-color:#aaa8a0;background:var(--surface2);}
+.resource-link-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.resource-link-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:5px;}
+.resource-link-url{font-size:10px;font-weight:600;color:var(--info);text-transform:uppercase;letter-spacing:0.04em;}
+.ai-tool-link{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius-sm);text-decoration:none;transition:background 0.15s;border:1px solid transparent;}
+.ai-tool-link:hover{background:var(--accent-light);border-color:var(--accent-light);}
+.ai-tool-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:#1A1814;color:#fff;letter-spacing:0.04em;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.ai-tool-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.ai-tool-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+.resource-divider{display:flex;align-items:center;gap:8px;margin:14px 0 10px;}
+.resource-divider-line{flex:1;height:1px;background:var(--border);}
+.resource-divider-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);white-space:nowrap;}{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:20px;background:none;border:none;padding:0;font-family:'DM Sans',sans-serif;}
+.back-btn:hover{color:var(--text);}
+@keyframes spin{to{transform:rotate(360deg);}}
+textarea.notes-field{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);resize:vertical;min-height:80px;outline:none;margin-top:8px;}
+textarea.notes-field:focus{border-color:var(--text);}
 
-    /* ── Pipeline kanban ── */
-    .kanban { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
-    .kanban-col { min-width: 195px; width: 195px; flex-shrink: 0; }
-    .kanban-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 4px; }
-    .kanban-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
-    .kanban-count { background: var(--border); color: var(--fg-muted); border-radius: 99px; font-size: 11px; font-weight: 700; padding: 1px 6px; }
-    .drop-zone {
-      min-height: 380px; display: flex; flex-direction: column; gap: 8px;
-      padding: 8px; border-radius: var(--radius);
-      background: #f8fafc; border: 2px dashed transparent; transition: all .15s;
-    }
-    .drop-zone.drag-over { border-color: var(--accent); background: var(--accent-light); }
-    .lead-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 12px; cursor: grab; box-shadow: var(--shadow); transition: box-shadow .15s; user-select: none; }
-    .lead-card:hover { box-shadow: var(--shadow-md); }
-    .lead-card.dragging { opacity: .45; }
-    .lead-name  { font-size: 13px; font-weight: 600; }
-    .lead-email { font-size: 11px; color: var(--fg-muted); margin-top: 2px; }
-    .lead-notes { font-size: 11px; color: var(--fg-muted); margin-top: 6px; line-height: 1.45; }
+/* ========== KANBAN BOARD ========== */
+.board-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.board-view-toggle{display:flex;gap:6px;}
+.view-btn{padding:7px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.view-btn.active{background:var(--text);color:#fff;border-color:var(--text);}
 
-    /* ── Profile ── */
-    .profile-hdr { display: flex; align-items: center; gap: 20px; margin-bottom: 28px; }
-    .profile-meta h2 { font-size: 22px; font-weight: 700; letter-spacing: -.4px; }
-    .profile-meta p  { font-size: 14px; color: var(--fg-muted); margin-top: 3px; }
-    .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg-muted); cursor: pointer; margin-bottom: 20px; }
-    .back-btn:hover { color: var(--fg); }
-    .tab-bar { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
-    .tab { padding: 9px 16px; font-size: 13px; font-weight: 600; color: var(--fg-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; }
-    .tab:hover { color: var(--fg); }
-    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-    .ses-row { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
-    .ses-row:last-child { border-bottom: none; }
-    .ses-datebox { width: 44px; text-align: center; flex-shrink: 0; }
-    .ses-month { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--fg-muted); }
-    .ses-day   { font-size: 22px; font-weight: 700; line-height: 1; }
-    .ses-body  { flex: 1; }
-    .ses-dur   { font-size: 11px; color: var(--fg-muted); margin-bottom: 4px; }
-    .ses-notes { font-size: 13px; line-height: 1.6; margin-bottom: 6px; }
-    .ses-next  { font-size: 12px; color: var(--accent); font-weight: 600; }
-    .goal-row  { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 13px; }
-    .goal-dot  { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 5px; }
+.kanban-scroll{overflow-x:auto;padding-bottom:16px;}
+.kanban-board{display:flex;gap:12px;min-width:max-content;align-items:flex-start;}
+.kanban-col{width:220px;flex-shrink:0;}
+.kanban-col-header{padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.kanban-col-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);}
+.kanban-col-count{background:var(--surface2);color:var(--muted);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;}
+.kanban-col-body{display:flex;flex-direction:column;gap:8px;min-height:60px;padding:4px 0;}
 
-    /* ── Misc ── */
-    .section-gap { margin-bottom: 20px; }
-    .empty { text-align: center; padding: 36px; color: var(--fg-muted); font-size: 13px; }
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
-  </style>
+/* KANBAN CARD */
+.kcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
+.kcard:hover{border-color:#aaa8a0;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.kcard-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.kcard-sub{font-size:11px;color:var(--muted);line-height:1.4;}
+.kcard-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.kcard-tag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:10px;letter-spacing:0.03em;}
+.kcard-urgency-high{background:var(--danger-light);color:var(--danger);}
+.kcard-urgency-med{background:var(--warn-light);color:var(--warn);}
+.kcard-urgency-low{background:var(--accent-light);color:var(--accent);}
+.kcard-meta{margin-top:8px;display:flex;flex-direction:column;gap:3px;}
+.kcard-meta-row{font-size:10px;color:var(--muted);display:flex;gap:4px;}
+.kcard-meta-row strong{color:var(--text);font-weight:500;}
+.kcard-actions{display:flex;gap:6px;margin-top:10px;}
+.kcard-link{font-size:10px;font-weight:600;color:var(--info);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0;text-decoration:underline;}
+.kcard-dots{position:absolute;top:10px;right:10px;font-size:16px;color:var(--border);cursor:pointer;line-height:1;}
+
+/* CARD DETAIL MODAL OVERLAY */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--surface);border-radius:var(--radius);width:100%;max-width:680px;overflow:hidden;position:relative;}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.modal-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);}
+.modal-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+.modal-close{background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;flex-shrink:0;line-height:1;padding:0;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:20px 24px;display:flex;flex-direction:column;gap:16px;}
+.modal-section{display:flex;flex-direction:column;gap:8px;}
+.modal-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);padding-bottom:6px;border-bottom:1px solid var(--border);}
+.modal-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;}
+.modal-field label{font-size:10px;color:var(--muted);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:0.04em;}
+.modal-field .val{font-size:13px;color:var(--text);font-weight:400;}
+.modal-field .val.em{font-style:italic;color:var(--muted);}
+.modal-tags-row{display:flex;flex-wrap:wrap;gap:5px;}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.linked-btn{font-size:11px;font-weight:600;padding:5px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;}
+.linked-btn:hover{background:var(--border);}
+
+/* YN PILL */
+.yn-yes{background:var(--accent-light);color:var(--accent);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;}
+.yn-no{background:var(--danger-light);color:var(--danger);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;}
+.match-strong{background:var(--accent-light);color:var(--accent);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;}
+.match-moderate{background:var(--warn-light);color:var(--warn);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;}
+.match-weak{background:var(--danger-light);color:var(--danger);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;}
+</style>
 </head>
 <body>
 
-<!-- ── Sidebar ───────────────────────────────────────────────────────────── -->
-<nav class="sidebar">
+<aside class="sidebar">
   <div class="sidebar-logo">
-    <h1>CoachHub</h1>
-    <p>Career Coaching Platform</p>
+    <div class="wordmark">Coaching<br>Board</div>
+    <div class="sub">Admin Dashboard</div>
   </div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="navigate('dashboard')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" onclick="navigate('coachees')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="3"/><path d="M1 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/><circle cx="13" cy="5" r="2"/><path d="M13 9c1.7 0 3 1.3 3 3"/></svg>
+      Coachees
+    </button>
+    <button class="nav-item" onclick="navigate('calendar')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 2"/></svg>
+      Weekly Calendar
+    </button>
+    <div class="nav-section">Resources</div>
+    <button class="nav-item" onclick="navigate('resources')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h9l3 3v9H2V2z"/><path d="M11 2v4h3"/><path d="M5 8h6M5 11h4"/></svg>
+      Resource Links
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="coach-badge">
+      <div class="coach-avatar">CA</div>
+      <div><div class="coach-name">Cassan</div></div>
+    </div>
+  </div>
+</aside>
 
-  <div class="nav-item active" onclick="nav('dashboard',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-    Dashboard
-  </div>
-  <div class="nav-item" onclick="nav('coachees',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    Coachees
-  </div>
-  <div class="nav-item" onclick="nav('sessions',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Sessions
-  </div>
-  <div class="nav-item" onclick="nav('pipeline',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Pipeline
-  </div>
-  <div style="flex:1"></div>
-  <div class="nav-item" onclick="resetData()" style="font-size:12px;color:#475569">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.35"/></svg>
-    Reset Data
-  </div>
-</nav>
-
-<!-- ── Main ──────────────────────────────────────────────────────────────── -->
 <main class="main">
 
-  <!-- DASHBOARD -->
-  <section id="pg-dashboard" class="page active">
-    <div class="page-header">
-      <h2>Dashboard</h2>
-      <p id="dash-date"></p>
-    </div>
-    <div class="g4 section-gap" id="dash-metrics"></div>
-    <div class="g2 section-gap">
-      <div class="card">
-        <div class="card-title">Today's Sessions</div>
-        <div id="dash-today"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Open Action Items</div>
-        <div id="dash-actions"></div>
-      </div>
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div><div class="page-title" id="dashboard-greeting">Good morning</div><div class="page-subtitle" id="dashboard-date"></div></div>
+    <button class="btn btn-primary" onclick="navigate('coachees')">+ Add Coachee</button>
+  </div>
+  <div class="metrics-row">
+    <div class="metric-card"><div class="metric-label">Active Coachees</div><div class="metric-value">5</div><div class="metric-sub up">All on 3-session track</div></div>
+    <div class="metric-card"><div class="metric-label">Sessions Today</div><div class="metric-value">4</div><div class="metric-sub">Next at 2:00 PM</div></div>
+    <div class="metric-card"><div class="metric-label">Open Action Items</div><div class="metric-value">11</div><div class="metric-sub down">2 overdue</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Today's Sessions</div>
+      <div id="dashboard-sessions"></div>
     </div>
     <div class="card">
-      <div class="card-title">Pipeline Snapshot</div>
-      <div id="dash-pipeline"></div>
+      <div class="card-title">Action Items Due (CAP)</div>
+      <div id="dashboard-cap-items"></div>
     </div>
-  </section>
+  </div>
+  <div class="card">
+    <div class="card-title">Session Completion — All Coachees</div>
+    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px;padding-top:4px">
+      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">James Lee</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot upcoming" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--purple);margin-top:5px">Today</div></div><div style="width:24px;height:2px;background:var(--border);margin-bottom:16px"></div><div><div class="session-dot empty" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--muted);margin-top:5px">Apr 24</div></div></div></div>
+      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">Maya Reyes</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div></div></div>
+      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">Tom Park</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot upcoming" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--purple);margin-top:5px">Today</div></div><div style="width:24px;height:2px;background:var(--border);margin-bottom:16px"></div><div><div class="session-dot empty" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--muted);margin-top:5px">Apr 22</div></div></div></div>
+      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">Priya Shah</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--border);margin-bottom:16px"></div><div><div class="session-dot empty" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--muted);margin-top:5px">Apr 21</div></div></div></div>
+      <div style="text-align:center"><div style="font-size:13px;font-weight:500;margin-bottom:14px">Aisha Noor</div><div style="display:flex;align-items:center;justify-content:center"><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">1</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--accent);margin-bottom:16px"></div><div><div class="session-dot done" style="width:36px;height:36px;font-size:12px;margin:0 auto">2</div><div style="font-size:10px;color:var(--accent);margin-top:5px">Done</div></div><div style="width:24px;height:2px;background:var(--border);margin-bottom:16px"></div><div><div class="session-dot upcoming" style="width:36px;height:36px;font-size:12px;margin:0 auto">3</div><div style="font-size:10px;color:var(--purple);margin-top:5px">Today</div></div></div></div>
+    </div>
+  </div>
+</div>
 
-  <!-- COACHEES -->
-  <section id="pg-coachees" class="page">
-    <div class="page-header">
-      <h2>Coachees</h2>
-      <p id="coachees-sub"></p>
-    </div>
-    <div class="search-bar">
-      <input class="input" type="text" placeholder="Search by name or role…" id="srch" oninput="filterCoachees()" style="max-width:260px">
-      <select class="input" id="flt" onchange="filterCoachees()" style="max-width:130px;width:auto">
-        <option value="all">All Status</option>
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-      </select>
-    </div>
-    <div class="coachee-list" id="coachee-list"></div>
-  </section>
+<!-- COACHEES PAGE -->
+<div class="page" id="page-coachees">
+  <div class="page-header">
+    <div><div class="page-title">Coachees</div><div class="page-subtitle">5 active · 3-session programme</div></div>
+    <button class="btn btn-primary">+ Add Coachee</button>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="Search by name or goal..." oninput="filterCoachees(this.value)">
+    <button class="filter-btn active" onclick="filterStatus('all',this)">All</button>
+    <button class="filter-btn" onclick="filterStatus('active',this)">Active</button>
+    <button class="filter-btn" onclick="filterStatus('complete',this)">Complete</button>
+  </div>
+  <div class="coachee-list" id="coachee-list">
+    <div class="coachee-row" onclick="showProfile('james')"><div class="avatar" style="background:#F3F0FF;color:#5B21B6">JL</div><div class="coachee-main"><div class="coachee-row-name">James Lee</div><div class="coachee-row-role">Senior Engineer → Product Manager · Career pivot</div></div><span class="badge badge-purple">1 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot upcoming" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--border);border-radius:1px"></div><div class="session-dot empty" style="width:26px;height:26px;font-size:10px">3</div></div></div>
+    <div class="coachee-row" onclick="showProfile('maya')"><div class="avatar" style="background:#EAF0E1;color:#2D5016">MR</div><div class="coachee-main"><div class="coachee-row-name">Maya Reyes</div><div class="coachee-row-role">Marketing Manager · Promotion prep</div></div><span class="badge badge-green">3 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot done" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot done" style="width:26px;height:26px;font-size:10px">3</div></div></div>
+    <div class="coachee-row" onclick="showProfile('tom')"><div class="avatar" style="background:#FFFBEB;color:#92400E">TP</div><div class="coachee-main"><div class="coachee-row-name">Tom Park</div><div class="coachee-row-role">UX Designer · Job search strategy</div></div><span class="badge badge-amber">1 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot upcoming" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--border);border-radius:1px"></div><div class="session-dot empty" style="width:26px;height:26px;font-size:10px">3</div></div></div>
+    <div class="coachee-row" onclick="showProfile('priya')"><div class="avatar" style="background:#EFF6FF;color:#1E40AF">PS</div><div class="coachee-main"><div class="coachee-row-name">Priya Shah</div><div class="coachee-row-role">Engineering Team Lead · Leadership development</div></div><span class="badge badge-blue">2 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot done" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--border);border-radius:1px"></div><div class="session-dot empty" style="width:26px;height:26px;font-size:10px">3</div></div></div>
+    <div class="coachee-row" onclick="showProfile('aisha')"><div class="avatar" style="background:#EAF0E1;color:#2D5016">AN</div><div class="coachee-main"><div class="coachee-row-name">Aisha Noor</div><div class="coachee-row-role">Director, Product · Executive presence</div></div><span class="badge badge-purple">2 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot done" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--border);border-radius:1px"></div><div class="session-dot upcoming" style="width:26px;height:26px;font-size:10px">3</div></div></div>
+  </div>
+</div>
 
-  <!-- PROFILE -->
-  <section id="pg-profile" class="page">
-    <div class="back-btn" onclick="nav('coachees', document.querySelectorAll('.nav-item')[1])">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      Back to Coachees
+<!-- PROFILE PAGE -->
+<div class="page" id="page-profile">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <button class="back-btn" style="margin-bottom:0" onclick="navigate('coachees')">← Back to coachees</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div id="notion-sync-status" style="font-size:11px;color:var(--muted)"></div>
+      <button class="btn btn-outline btn-sm" id="notion-sync-btn" onclick="syncFromNotion()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 8A7 7 0 0114.5 5M15 8a7 7 0 01-13.5 3"/><path d="M13 2l2 3-3 1M3 14l-2-3 3-1"/></svg>
+        Sync from Notion
+      </button>
     </div>
-    <div id="profile-content"></div>
-  </section>
+  </div>
+  <div id="notion-sync-banner" style="display:none;padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;margin-bottom:12px"></div>
+  <div class="profile-header" id="profile-header"></div>
+  <div class="card" style="margin-bottom:16px" id="profile-session-progress"></div>
+  <div class="card" style="margin-bottom:16px" id="profile-details"></div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Resume</div>
+        <div id="resume-upload-area">
+          <div class="upload-zone" id="resume-zone" onclick="document.getElementById('resume-file-input').click()" ondragover="handleResumeDragOver(event)" ondragleave="handleResumeDragLeave(event)" ondrop="handleResumeDrop(event)">
+            <input type="file" id="resume-file-input" accept=".pdf,.doc,.docx" onchange="handleResumeSelect(event)">
+            <div class="upload-zone-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h3"/><path d="M5 8h6M5 11h4"/></svg>
+            </div>
+            <div class="upload-zone-label">Drop resume here</div>
+            <div class="upload-zone-sub">or click to browse · .pdf, .doc, .docx</div>
+          </div>
+          <div id="resume-chip" style="display:none"></div>
+          <div id="resume-preview" style="display:none;margin-top:12px"></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-title">Notes</div><textarea class="notes-field" placeholder="Add coaching notes here..."></textarea></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" id="cap-generator-card">
+        <div class="card-title">Career Action Plan</div>
+        <div class="cap-tabs">
+          <button class="cap-tab active" onclick="switchCapTab('upload',this)">Upload Transcript</button>
+          <button class="cap-tab" onclick="switchCapTab('paste',this)">Paste Text</button>
+        </div>
+        <div class="cap-panel active" id="cap-panel-upload">
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('transcript-file').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+            <input type="file" id="transcript-file" accept=".txt,.pdf,.doc,.docx" onchange="handleFileSelect(event)">
+            <div class="upload-zone-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 10V3M8 3L5 6M8 3L11 6"/><path d="M2 13h12"/></svg>
+            </div>
+            <div class="upload-zone-label">Drop summary here</div>
+            <div class="upload-zone-sub">or click to browse · .txt, .pdf, .doc, .docx</div>
+          </div>
+          <div id="file-chip" style="display:none"></div>
+        </div>
+        <div class="cap-panel" id="cap-panel-paste">
+          <textarea class="notes-field" id="transcript-paste" placeholder="Paste your session transcript or summary here..." style="min-height:120px"></textarea>
+        </div>
+        <button class="ai-btn" id="generate-cap-btn" onclick="generateCAP()" disabled>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1v14M1 8h14"/><circle cx="8" cy="8" r="3"/></svg>
+          Generate CAP with AI
+        </button>
+        <div id="cap-output-area"></div>
+        <div id="cap-attachments"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">CAP Send</div>
+        <div id="profile-actions"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <!-- SESSIONS -->
-  <section id="pg-sessions" class="page">
-    <div class="page-header"><h2>Sessions</h2></div>
-    <div class="week-nav">
-      <button class="btn btn-ghost" onclick="shiftWeek(-1)">← Prev</button>
-      <div class="week-label" id="week-label"></div>
-      <button class="btn btn-ghost" onclick="shiftWeek(1)">Next →</button>
-    </div>
-    <div class="week-grid" id="week-grid"></div>
-  </section>
+<!-- SESSIONS PAGE -->
+<!-- WEEKLY CALENDAR -->
+<div class="page" id="page-calendar">
+  <div class="page-header"><div><div class="page-title">Weekly Calendar</div><div class="page-subtitle">Week of Apr 7 – 11, 2026</div></div><div style="display:flex;gap:8px"><button class="btn btn-outline">← Prev</button><button class="btn btn-outline">Next →</button></div></div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center"><span style="font-size:11px;color:var(--muted)">Legend:</span><span style="background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Completed</span><span style="background:var(--purple-light);color:var(--purple);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Upcoming</span><span style="background:var(--warn-light);color:var(--warn);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px">Today</span></div>
+  <div class="calendar-grid">
+    <div class="cal-header"></div><div class="cal-header">Mon 7</div><div class="cal-header">Tue 8</div><div class="cal-header">Wed 9</div><div class="cal-header">Thu 10 · today</div><div class="cal-header">Fri 11</div>
+    <div class="cal-time">9 AM</div><div class="cal-cell"><div class="cal-event done">James L. S1<br>Career pivot</div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event upcoming">James L. S2<br>Resume</div></div><div class="cal-cell"></div>
+    <div class="cal-time">10 AM</div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event done">Priya S. S1<br>Leadership</div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+    <div class="cal-time">11 AM</div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event done">Maya R. S2<br>Promotion</div></div><div class="cal-cell"><div class="cal-event done">Maya R. S3<br>Final</div></div><div class="cal-cell"></div>
+    <div class="cal-time">12 PM</div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+    <div class="cal-time">1 PM</div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+    <div class="cal-time">2 PM</div><div class="cal-cell"><div class="cal-event done">Tom P. S1<br>Job search</div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event pending">Tom P. S2<br>Interviews</div></div><div class="cal-cell"></div>
+    <div class="cal-time">3 PM</div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event done">Priya S. S2<br>Delegation</div></div><div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+    <div class="cal-time">4 PM</div><div class="cal-cell"><div class="cal-event done">Aisha N. S1<br>Exec</div></div><div class="cal-cell"></div><div class="cal-cell"><div class="cal-event done">Aisha N. S2<br>Board prep</div></div><div class="cal-cell"><div class="cal-event pending">Aisha N. S3<br>Final</div></div><div class="cal-cell"></div>
+  </div>
+  <div style="margin-top:24px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:12px">This week at a glance</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px"><div class="metric-card"><div class="metric-label">Total Sessions</div><div class="metric-value" style="font-size:24px">9</div></div><div class="metric-card"><div class="metric-label">Completed</div><div class="metric-value" style="font-size:24px;color:var(--accent)">6</div></div><div class="metric-card"><div class="metric-label">Upcoming</div><div class="metric-value" style="font-size:24px;color:var(--purple)">1</div></div><div class="metric-card"><div class="metric-label">Today</div><div class="metric-value" style="font-size:24px;color:var(--warn)">2</div></div></div></div>
+</div>
 
-  <!-- PIPELINE -->
-  <section id="pg-pipeline" class="page">
-    <div class="page-header">
-      <h2>Pipeline</h2>
-      <p>Drag cards between columns to update stage</p>
+
+<!-- RESOURCES PAGE -->
+<div class="page" id="page-resources">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Resource Links</div>
+      <div class="page-subtitle">Curated articles and AI tools to share with coachees</div>
     </div>
-    <div class="kanban" id="kanban"></div>
-  </section>
+  </div>
+
+  <!-- CV TIPS -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:34px;height:34px;border-radius:var(--radius-sm);background:#EEEDFE;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#5B21B6" stroke-width="1.5"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h3"/><path d="M5 8h6M5 11h4"/></svg>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--text)">CV Tips</div>
+        <div style="font-size:11px;color:var(--muted)">Resume writing, formatting, and ATS optimisation</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <a href="https://www.topcv.com/career-advice/how-to-write-a-cv" target="_blank" class="resource-link">
+        <div class="resource-link-title">How to Write a CV — TopCV</div>
+        <div class="resource-link-desc">Step-by-step guide on structuring a professional CV, from personal statement to work history.</div>
+        <div class="resource-link-url">topcv.com</div>
+      </a>
+      <a href="https://resumegenius.com/resume-help/how-to-beat-the-ats" target="_blank" class="resource-link">
+        <div class="resource-link-title">How to Beat the ATS — Resume Genius</div>
+        <div class="resource-link-desc">Tips on formatting, keywords, and structure to pass Applicant Tracking Systems.</div>
+        <div class="resource-link-url">resumegenius.com</div>
+      </a>
+      <a href="https://www.linkedin.com/business/talent/blog/talent-acquisition/tips-for-writing-a-resume" target="_blank" class="resource-link">
+        <div class="resource-link-title">Resume Writing Tips — LinkedIn Talent Blog</div>
+        <div class="resource-link-desc">LinkedIn's own guidance on writing a resume that stands out to recruiters.</div>
+        <div class="resource-link-url">linkedin.com</div>
+      </a>
+      <a href="https://www.themuse.com/advice/43-resume-tips-that-will-help-you-get-hired" target="_blank" class="resource-link">
+        <div class="resource-link-title">43 Resume Tips That Will Help You Get Hired — The Muse</div>
+        <div class="resource-link-desc">Practical, actionable tips covering every section of a resume, with common mistakes to avoid.</div>
+        <div class="resource-link-url">themuse.com</div>
+      </a>
+      <div class="resource-divider"><div class="resource-divider-line"></div><div class="resource-divider-label">AI Tools</div><div class="resource-divider-line"></div></div>
+      <a href="https://www.resumeworded.com" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Resume Worded</div><div class="ai-tool-desc">AI-powered resume and LinkedIn scorer. Instant feedback on impact, brevity, and ATS compatibility.</div></div>
+      </a>
+      <a href="https://www.kickresume.com" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Kickresume</div><div class="ai-tool-desc">AI resume builder that generates tailored bullet points and rewrites weak experience descriptions.</div></div>
+      </a>
+      <a href="https://www.enhancv.com" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Enhancv</div><div class="ai-tool-desc">Resume builder with AI suggestions for phrasing, quantifying achievements, and matching job descriptions.</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- INTERVIEW TIPS -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:34px;height:34px;border-radius:var(--radius-sm);background:#EAF0E1;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#2D5016" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M8 11v3"/></svg>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--text)">Interview Tips</div>
+        <div style="font-size:11px;color:var(--muted)">Preparation, STAR method, and answering tough questions</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <a href="https://www.themuse.com/advice/how-to-answer-tell-me-about-yourself-interview-question" target="_blank" class="resource-link">
+        <div class="resource-link-title">How to Answer "Tell Me About Yourself" — The Muse</div>
+        <div class="resource-link-desc">A clear framework for crafting a confident, compelling answer to the most common interview opener.</div>
+        <div class="resource-link-url">themuse.com</div>
+      </a>
+      <a href="https://www.indeed.com/career-advice/interviewing/how-to-use-the-star-interview-response-technique" target="_blank" class="resource-link">
+        <div class="resource-link-title">How to Use the STAR Interview Technique — Indeed</div>
+        <div class="resource-link-desc">Complete guide to Situation, Task, Action, Result with worked examples for behavioural questions.</div>
+        <div class="resource-link-url">indeed.com</div>
+      </a>
+      <a href="https://hbr.org/2021/11/10-common-job-interview-questions-and-how-to-answer-them" target="_blank" class="resource-link">
+        <div class="resource-link-title">10 Common Interview Questions — Harvard Business Review</div>
+        <div class="resource-link-desc">HBR's research-backed answers to the questions that trip candidates up most often.</div>
+        <div class="resource-link-url">hbr.org</div>
+      </a>
+      <a href="https://www.glassdoor.com/blog/guide/how-to-prepare-for-an-interview/" target="_blank" class="resource-link">
+        <div class="resource-link-title">How to Prepare for an Interview — Glassdoor</div>
+        <div class="resource-link-desc">End-to-end interview prep guide covering research, practice, attire, and follow-up.</div>
+        <div class="resource-link-url">glassdoor.com</div>
+      </a>
+      <div class="resource-divider"><div class="resource-divider-line"></div><div class="resource-divider-label">AI Tools</div><div class="resource-divider-line"></div></div>
+      <a href="https://www.interviewai.io" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Interview AI</div><div class="ai-tool-desc">AI mock interviewer that simulates real job interviews, gives instant feedback on answers and delivery.</div></div>
+      </a>
+      <a href="https://www.final-round-ai.com" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Final Round AI</div><div class="ai-tool-desc">Real-time AI interview copilot that listens and surfaces relevant talking points during live interviews.</div></div>
+      </a>
+      <a href="https://www.yoodli.ai" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Yoodli</div><div class="ai-tool-desc">AI speech coach that analyses filler words, pacing, eye contact, and confidence during interview practice.</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- LINKEDIN PROFILE TIPS -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:34px;height:34px;border-radius:var(--radius-sm);background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1E40AF" stroke-width="1.5"><rect x="1" y="1" width="14" height="14" rx="2"/><path d="M4 7v5M4 4v.5"/><path d="M8 12V9c0-1.1.9-2 2-2s2 .9 2 2v3"/><path d="M8 7v5"/></svg>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--text)">LinkedIn Profile Tips</div>
+        <div style="font-size:11px;color:var(--muted)">Optimise your profile for visibility, recruiters, and networking</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <a href="https://www.linkedin.com/business/talent/blog/product-tips/linkedin-profile-tips" target="_blank" class="resource-link">
+        <div class="resource-link-title">LinkedIn Profile Tips — LinkedIn Official</div>
+        <div class="resource-link-desc">Official LinkedIn guidance on completing your profile to All-Star status and maximising discoverability.</div>
+        <div class="resource-link-url">linkedin.com</div>
+      </a>
+      <a href="https://www.themuse.com/advice/the-31-best-linkedin-profile-tips-for-job-seekers" target="_blank" class="resource-link">
+        <div class="resource-link-title">31 Best LinkedIn Profile Tips for Job Seekers — The Muse</div>
+        <div class="resource-link-desc">Practical tips on headlines, summaries, skills, endorsements, and making connections.</div>
+        <div class="resource-link-url">themuse.com</div>
+      </a>
+      <a href="https://www.hubspot.com/marketing/linkedin-profile-tips" target="_blank" class="resource-link">
+        <div class="resource-link-title">LinkedIn Profile Tips to Stand Out — HubSpot</div>
+        <div class="resource-link-desc">How to write a compelling headline, summary, and experience section that attracts the right attention.</div>
+        <div class="resource-link-url">hubspot.com</div>
+      </a>
+      <a href="https://careersidekick.com/linkedin-profile-tips/" target="_blank" class="resource-link">
+        <div class="resource-link-title">LinkedIn Profile Tips for 2026 — Career Sidekick</div>
+        <div class="resource-link-desc">Up-to-date tips on profile photos, banners, keywords, and getting noticed by recruiters.</div>
+        <div class="resource-link-url">careersidekick.com</div>
+      </a>
+      <div class="resource-divider"><div class="resource-divider-line"></div><div class="resource-divider-label">AI Tools</div><div class="resource-divider-line"></div></div>
+      <a href="https://www.resumeworded.com/linkedin-review" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Resume Worded — LinkedIn Review</div><div class="ai-tool-desc">Free AI tool that scores your LinkedIn profile and gives specific suggestions to improve each section.</div></div>
+      </a>
+      <a href="https://www.taplio.com" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Taplio</div><div class="ai-tool-desc">AI-powered LinkedIn content creator that helps write posts, grow engagement, and build a professional brand.</div></div>
+      </a>
+      <a href="https://www.lunchclub.com" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Lunchclub</div><div class="ai-tool-desc">AI networking platform that matches professionals for 1:1 virtual meetings based on goals and background.</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- NETWORKING TIPS -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:34px;height:34px;border-radius:var(--radius-sm);background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#92400E" stroke-width="1.5"><circle cx="3" cy="8" r="2"/><circle cx="13" cy="3" r="2"/><circle cx="13" cy="13" r="2"/><path d="M5 8h3l3-4M5 8h3l3 4"/></svg>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--text)">Networking Tips</div>
+        <div style="font-size:11px;color:var(--muted)">Building professional connections online and in-person</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <a href="https://hbr.org/2016/05/learn-to-love-networking" target="_blank" class="resource-link">
+        <div class="resource-link-title">Learn to Love Networking — Harvard Business Review</div>
+        <div class="resource-link-desc">HBR research on why networking feels uncomfortable and how to reframe it as a purposeful activity.</div>
+        <div class="resource-link-url">hbr.org</div>
+      </a>
+      <a href="https://www.themuse.com/advice/networking-for-introverts" target="_blank" class="resource-link">
+        <div class="resource-link-title">Networking for Introverts — The Muse</div>
+        <div class="resource-link-desc">Strategies for building meaningful professional relationships even if networking feels draining.</div>
+        <div class="resource-link-url">themuse.com</div>
+      </a>
+      <a href="https://www.indeed.com/career-advice/career-development/networking-tips" target="_blank" class="resource-link">
+        <div class="resource-link-title">15 Networking Tips to Help Advance Your Career — Indeed</div>
+        <div class="resource-link-desc">Practical tips on reaching out, following up, attending events, and maintaining relationships.</div>
+        <div class="resource-link-url">indeed.com</div>
+      </a>
+      <a href="https://www.linkedin.com/pulse/how-network-effectively-2024-tips-strategies-career-growth" target="_blank" class="resource-link">
+        <div class="resource-link-title">How to Network Effectively — LinkedIn</div>
+        <div class="resource-link-desc">LinkedIn's own guide to warm outreach, informational interviews, and growing your network strategically.</div>
+        <div class="resource-link-url">linkedin.com</div>
+      </a>
+      <div class="resource-divider"><div class="resource-divider-line"></div><div class="resource-divider-label">AI Tools</div><div class="resource-divider-line"></div></div>
+      <a href="https://www.clay.com" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Clay</div><div class="ai-tool-desc">AI-powered personal CRM that helps track and nurture professional relationships with smart follow-up reminders.</div></div>
+      </a>
+      <a href="https://www.otter.ai" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">Otter.ai</div><div class="ai-tool-desc">AI meeting transcription and notes tool — ideal for capturing key details from networking calls and follow-ups.</div></div>
+      </a>
+      <a href="https://www.chatgpt.com" target="_blank" class="ai-tool-link">
+        <span class="ai-tool-badge">AI</span>
+        <div><div class="ai-tool-name">ChatGPT — Networking Message Writer</div><div class="ai-tool-desc">Use ChatGPT to draft personalised connection requests, follow-up messages, and cold outreach emails.</div></div>
+      </a>
+    </div>
+  </div>
+</div>
 
 </main>
 
+
+
 <script>
-// ─── Constants ────────────────────────────────────────────────────────────────
-const STAGES = ['lead','intro','proposal','pending','won','lost'];
-const STAGE_LABEL = { lead:'Lead', intro:'Intro Call', proposal:'Proposal', pending:'Pending', won:'Won', lost:'Lost' };
-const STAGE_COLOR = { lead:'#94a3b8', intro:'#3b82f6', proposal:'#f59e0b', pending:'#8b5cf6', won:'#10b981', lost:'#ef4444' };
-const DAY_NAMES   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// ============ MERGED COACHEE PROFILES ============
+const profiles = {
+  james:{
+    initials:'JL',name:'James Lee',role:'Senior Engineer → Product Manager',
+    bg:'#F3F0FF',color:'#5B21B6',
+    // Board fields
+    stage:'Session 2 Pending Booking',
+    contact:'+65 9123 4567',email:'james.lee@email.com',
+    industry:'Technology / Product',targetTitles:'Product Manager, Associate PM',
+    employment:'Employed – looking to switch',urgency:'High',
+    bookingPref:'Weekday mornings',assignedCoach:'Cassan',
+    s1date:'Mar 20, 2026',s2date:'Apr 10, 2026',s3date:'Apr 24, 2026',
+    aiCoach:'Yes',cvReceived:'Yes',linkedinProvided:'Yes',riasecDone:'Yes',
+    riasecCodes:'I, E, C',careerMatch:'Moderate',
+    priority:'Transition narrative & PM portfolio',
+    risks:'Limited PM experience; strong engineering identity',
+    progressStatus:'On Track',
+    nextAction:'Send resume feedback',nextOwner:'Cassan',nextDue:'Apr 12',
+    outcome:'In progress – targeting PM offers by Q3',
+    goals:'Transition into a Product Manager role at a mid-stage startup within 6 months.',
+    reality:'Strong technical execution skills; gap in product strategy articulation and PM portfolio.',
+    options:'Apply to Associate PM programmes, leverage engineering background for technical PM roles, build 2–3 case studies.',
+    wayForward:'Focus on rewriting CV, building PM portfolio, and networking within target companies over the next 6 weeks.',
+    // Profile fields
+    goal:'Career pivot to PM',status:'Active',start:'Apr 2026',
+    tags:['Career Switcher','Mid-Career','Resume Focus'],
+    sessionProgress:[
+      {num:1,label:'Mar 20',status:'done',title:'PM skills gap assessment'},
+      {num:2,label:'Apr 10',status:'upcoming',title:'Resume & portfolio review'},
+      {num:3,label:'Apr 24',status:'empty',title:'Mock interview & offer prep'}
+    ],
+    sessionList:[
+      {date:'Mar 20',time:'9:00 AM',title:'PM skills gap assessment',status:'done',next:'Read Shape Up & Continuous Discovery',meetUrl:'https://meet.google.com/abc-defg-hij'},
+      {date:'Apr 10',time:'9:00 AM',title:'Resume & portfolio review',status:'upcoming',next:'Send resume feedback by EOD',meetUrl:'https://meet.google.com/abc-defg-hij'},
+      {date:'Apr 24',time:'9:00 AM',title:'Mock interview & offer prep',status:'scheduled',next:'Prepare mock interview questions',meetUrl:''}
+    ]
+  },
+  maya:{
+    initials:'MR',name:'Maya Reyes',role:'Marketing Manager',
+    bg:'#EAF0E1',color:'#2D5016',
+    stage:'Session 3 Completed',
+    contact:'+65 9234 5678',email:'maya.reyes@corp.com',
+    industry:'Marketing / Corporate',targetTitles:'Senior Marketing Manager, Head of Marketing',
+    employment:'Employed – seeking promotion',urgency:'Medium',
+    bookingPref:'Weekday 11am–1pm',assignedCoach:'Cassan',
+    s1date:'Mar 10, 2026',s2date:'Apr 3, 2026',s3date:'Apr 10, 2026',
+    aiCoach:'Yes',cvReceived:'Yes',linkedinProvided:'Yes',riasecDone:'Yes',
+    riasecCodes:'E, S, A',careerMatch:'Strong',
+    priority:'Promotion case & stakeholder influence',
+    risks:'Risk of delayed decision from senior management',
+    progressStatus:'Completed',
+    nextAction:'Submit promotion case to manager',nextOwner:'Maya Reyes',nextDue:'Apr 15',
+    outcome:'Promotion case submitted – decision expected May',
+    goals:'Secure promotion to Senior Marketing Manager by Q2 2026.',
+    reality:'Strong performer with quantified results; needs to build executive sponsorship.',
+    options:'Submit promotion case, secure exec sponsor meeting, present Q1 impact data.',
+    wayForward:'Submit finalised promotion case by Apr 15 and follow up with exec sponsor weekly.',
+    goal:'Promotion to Senior Manager',status:'Complete',start:'Mar 2026',
+    tags:['PMET','LinkedIn Focus'],
+    sessionProgress:[
+      {num:1,label:'Mar 10',status:'done',title:'Metrics & impact framing'},
+      {num:2,label:'Apr 3',status:'done',title:'Stakeholder mapping'},
+      {num:3,label:'Apr 10',status:'done',title:'Promotion case final review'}
+    ],
+    sessionList:[
+      {date:'Mar 10',time:'11:00 AM',title:'Metrics & impact framing',status:'done',next:'Quantify Q1 campaign results',meetUrl:'https://meet.google.com/bcd-efgh-ijk'},
+      {date:'Apr 3',time:'11:00 AM',title:'Stakeholder mapping workshop',status:'done',next:'Draft exec sponsor message',meetUrl:'https://meet.google.com/bcd-efgh-ijk'},
+      {date:'Apr 10',time:'11:00 AM',title:'Promotion case final review',status:'done',next:'Submit promotion case by Apr 15',meetUrl:'https://meet.google.com/bcd-efgh-ijk'}
+    ]
+  },
+  tom:{
+    initials:'TP',name:'Tom Park',role:'UX Designer',
+    bg:'#FFFBEB',color:'#92400E',
+    stage:'Session 2 Pending Booking',
+    contact:'+65 9345 6789',email:'tom.park@design.io',
+    industry:'Design / Technology',targetTitles:'Senior UX Designer, Lead UX',
+    employment:'Employed – active job search',urgency:'High',
+    bookingPref:'Afternoons',assignedCoach:'Cassan',
+    s1date:'Apr 1, 2026',s2date:'Apr 10, 2026',s3date:'Apr 22, 2026',
+    aiCoach:'Yes',cvReceived:'Yes',linkedinProvided:'No',riasecDone:'No',
+    riasecCodes:'—',careerMatch:'Moderate',
+    priority:'Job search strategy & interview readiness',
+    risks:'Portfolio case studies need rewriting; no LinkedIn yet',
+    progressStatus:'Slightly Behind',
+    nextAction:'Complete LinkedIn profile',nextOwner:'Tom Park',nextDue:'Apr 14',
+    outcome:'Targeting Senior UX offers at fintech by May',
+    goals:'Land a Senior UX Designer role at a fintech or tech company within 2 months.',
+    reality:'Strong design instincts but weak personal branding; no LinkedIn profile yet.',
+    options:'Rewrite 2 portfolio case studies, build LinkedIn, apply to 10 target roles, practise STAR answers.',
+    wayForward:'Complete LinkedIn this week, submit 3 applications before next session.',
+    goal:'Land senior UX role',status:'Active',start:'Apr 2026',
+    tags:['Mid-Career','Interview Focus','LinkedIn Focus'],
+    sessionProgress:[
+      {num:1,label:'Apr 1',status:'done',title:'Target companies & portfolio'},
+      {num:2,label:'Apr 10',status:'upcoming',title:'STAR answers & applications'},
+      {num:3,label:'Apr 22',status:'empty',title:'Offer negotiation strategy'}
+    ],
+    sessionList:[
+      {date:'Apr 1',time:'2:00 PM',title:'Target companies & portfolio review',status:'done',next:'Build target list of 15 companies',meetUrl:'https://meet.google.com/cde-fghi-jkl'},
+      {date:'Apr 10',time:'2:00 PM',title:'STAR answers & applications',status:'upcoming',next:'Apply to 3 roles',meetUrl:'https://meet.google.com/cde-fghi-jkl'},
+      {date:'Apr 22',time:'2:00 PM',title:'Offer negotiation strategy',status:'scheduled',next:'Prepare negotiation questions',meetUrl:''}
+    ]
+  },
+  priya:{
+    initials:'PS',name:'Priya Shah',role:'Engineering Team Lead',
+    bg:'#EFF6FF',color:'#1E40AF',
+    stage:'Session 2 Completed',
+    contact:'+65 9456 7890',email:'priya.shah@techco.com',
+    industry:'Technology / Engineering',targetTitles:'Engineering Manager, Director of Engineering',
+    employment:'Employed – developing leadership',urgency:'Low',
+    bookingPref:'Monday / Wednesday mornings',assignedCoach:'Cassan',
+    s1date:'Mar 24, 2026',s2date:'Apr 7, 2026',s3date:'Apr 21, 2026',
+    aiCoach:'No',cvReceived:'Yes',linkedinProvided:'Yes',riasecDone:'Yes',
+    riasecCodes:'I, S, E',careerMatch:'Strong',
+    priority:'Leadership presence & team influence',
+    risks:'Tendency to over-deliver individually; needs to delegate more',
+    progressStatus:'On Track',
+    nextAction:'Draft team vision statement',nextOwner:'Priya Shah',nextDue:'Apr 20',
+    outcome:'Building leadership capability for EM role',
+    goals:'Develop leadership presence and influence skills to move into an Engineering Manager role.',
+    reality:'Technically exceptional; known for execution but not yet seen as a strategic leader.',
+    options:'Practise delegation, build stakeholder visibility, run structured 1:1s, draft team vision.',
+    wayForward:'Draft team vision statement before Session 3; implement structured 1:1s with new hire.',
+    goal:'Leadership development',status:'Active',start:'Mar 2026',
+    tags:['PMET','Career Clarity Needed'],
+    sessionProgress:[
+      {num:1,label:'Mar 24',status:'done',title:'Influence without authority'},
+      {num:2,label:'Apr 7',status:'done',title:'Delegation & difficult convos'},
+      {num:3,label:'Apr 21',status:'empty',title:'Leadership presence & vision'}
+    ],
+    sessionList:[
+      {date:'Mar 24',time:'10:00 AM',title:'Influence without authority',status:'done',next:'Map key stakeholders',meetUrl:'https://meet.google.com/def-ghij-klm'},
+      {date:'Apr 7',time:'10:00 AM',title:'Delegation & difficult conversations',status:'done',next:'LinkedIn profile audit',meetUrl:'https://meet.google.com/def-ghij-klm'},
+      {date:'Apr 21',time:'10:00 AM',title:'Leadership presence & vision',status:'scheduled',next:'Draft team vision statement',meetUrl:''}
+    ]
+  },
+  aisha:{
+    initials:'AN',name:'Aisha Noor',role:'Director, Product',
+    bg:'#EAF0E1',color:'#2D5016',
+    stage:'Session 3 Pending Booking',
+    contact:'+65 9567 8901',email:'aisha.noor@enterprise.com',
+    industry:'Product / Enterprise',targetTitles:'VP of Product, Chief Product Officer',
+    employment:'Employed – exec track',urgency:'Medium',
+    bookingPref:'Early mornings or late afternoons',assignedCoach:'Cassan',
+    s1date:'Mar 27, 2026',s2date:'Apr 3, 2026',s3date:'Apr 10, 2026',
+    aiCoach:'Yes',cvReceived:'No',linkedinProvided:'Yes',riasecDone:'Yes',
+    riasecCodes:'E, I, S',careerMatch:'Strong',
+    priority:'Executive presence & board communication',
+    risks:'Board presentation anxiety; needs stronger data storytelling',
+    progressStatus:'On Track',
+    nextAction:'Submit board deck for review',nextOwner:'Aisha Noor',nextDue:'Apr 12',
+    outcome:'Board presentation scheduled Apr 17',
+    goals:'Strengthen executive presence and deliver a high-impact board presentation on Apr 17.',
+    reality:'Highly capable director; underestimates own authority and over-explains in senior settings.',
+    options:'Board presentation dry run, Q&A prep, executive communication framework, projection practice.',
+    wayForward:'Submit board deck Apr 12, complete dry run in Session 3, debrief after Apr 17 presentation.',
+    goal:'Executive presence & board readiness',status:'Active',start:'Mar 2026',
+    tags:['PMET','High Support Needed'],
+    sessionProgress:[
+      {num:1,label:'Mar 27',status:'done',title:'Handling senior pushback'},
+      {num:2,label:'Apr 3',status:'done',title:'Executive communication'},
+      {num:3,label:'Apr 10',status:'upcoming',title:'Board presentation dry run'}
+    ],
+    sessionList:[
+      {date:'Mar 27',time:'4:30 PM',title:'Handling pushback from senior leaders',status:'done',next:'Write 3 reframe scripts',meetUrl:'https://meet.google.com/efg-hijk-lmn'},
+      {date:'Apr 3',time:'4:30 PM',title:'Executive communication style',status:'done',next:'Review recording of last all-hands',meetUrl:'https://meet.google.com/efg-hijk-lmn'},
+      {date:'Apr 10',time:'4:30 PM',title:'Board presentation dry run',status:'upcoming',next:'Practice deck run-through',meetUrl:'https://meet.google.com/efg-hijk-lmn'}
+    ]
+  }
+};
+const actionState = {};
 
-const today = new Date();
-today.setHours(0,0,0,0);
-const todayStr = today.toISOString().slice(0,10);
+// ============ NAVIGATION ============
+const navMap = {dashboard:0,coachees:1,calendar:2,resources:3};
 
-// ─── Date helpers ─────────────────────────────────────────────────────────────
-const ago  = n => { const d = new Date(today); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); };
-const from = n => { const d = new Date(today); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
-const fmtD = s  => new Date(s).toLocaleDateString('en-SG', { day:'numeric', month:'short', year:'numeric' });
+// Today's sessions data — pulled from profiles.sessionList
+// Each entry: {profileId, sessionNum, name, bg, color, initials, goal, time, status, meetUrl}
+const todaySessions = [
+  {profileId:'james', sessionNum:2, name:'James Lee', bg:'#F3F0FF', color:'#5B21B6', initials:'JL', goal:'Career pivot', time:'9:00 AM', statusLabel:'Upcoming', statusClass:'badge-purple', meetUrl:'https://meet.google.com/abc-defg-hij'},
+  {profileId:'maya',  sessionNum:3, name:'Maya Reyes', bg:'#EAF0E1', color:'#2D5016', initials:'MR', goal:'Promotion prep', time:'11:00 AM', statusLabel:'Done', statusClass:'badge-green', meetUrl:'https://meet.google.com/bcd-efgh-ijk'},
+  {profileId:'tom',   sessionNum:2, name:'Tom Park', bg:'#FFFBEB', color:'#92400E', initials:'TP', goal:'Job search', time:'2:00 PM', statusLabel:'In 2h', statusClass:'badge-amber', meetUrl:'https://meet.google.com/cde-fghi-jkl'},
+  {profileId:'aisha', sessionNum:3, name:'Aisha Noor', bg:'#EFF6FF', color:'#1E40AF', initials:'AN', goal:'Executive presence', time:'4:30 PM', statusLabel:'Later', statusClass:'badge-amber', meetUrl:'https://meet.google.com/efg-hijk-lmn'}
+];
 
-// ─── Seed data ────────────────────────────────────────────────────────────────
-function seedData() {
-  const coachees = [
-    { id:'c1',  name:'Aileen Chow',         role:'Marketing Professional (ex-Banking)',          targetRole:'Marketing Manager (Financial Services / Education)',
-      goals:['Gain career clarity: decide between financial services return vs education/nonprofit pivot','Build interview confidence and overcome imposter syndrome when articulating value','Strengthen personal brand and LinkedIn presence for job applications'],
-      status:'active',   startDate:'2026-03-24', color:'#3b82f6' },
-    { id:'c2',  name:'Alex Lee',             role:'Job Seeker (Ecommerce / Digital)',             targetRole:'Ecommerce / Digital Marketing Executive',
-      goals:['Secure a permanent role in ecommerce or the digital industry','Build a compelling strengths narrative and differentiated personal brand','Achieve minimum salary target of $3,000–$3,500/month'],
-      status:'active',   startDate:'2025-10-09', color:'#10b981' },
-    { id:'c3',  name:'Christopher Chong',    role:'Regional Commercial Leader (APAC, 14 yrs)',    targetRole:'Regional Sales Leadership Role ($160–200k)',
-      goals:['Land a regional commercial or sales leadership role with APAC scope','Sharpen STAR-format storytelling to communicate commercial impact in interviews','Integrate BCG digital certification to modernise commercial approach and widen options'],
-      status:'active',   startDate:'2025-12-04', color:'#f59e0b' },
-    { id:'c4',  name:'Chuah Li Ping (Jaz)',  role:'Account Servicing & Sales (15+ yrs APAC)',    targetRole:'Account Manager / Customer Success (SGD 5k)',
-      goals:['Reframe career narrative: shift from hunter sales to farmer/account servicing','Run dual-track search: Account Management + Training & Development (complete ACLP)','Target FMCG, B2B SaaS, and retail sectors where relationship-driven profiles are valued'],
-      status:'active',   startDate:'2025-09-24', color:'#8b5cf6' },
-    { id:'c5',  name:'Desmond Yong',         role:'Administrative Professional (20+ yrs)',        targetRole:'Administrative Executive / EA/PA (Contract or PT)',
-      goals:['Secure a part-time or contract admin role with suitable hours and environment','Overcome age discrimination by rebuilding confidence and refreshing professional presentation','Improve LinkedIn visibility and networking to generate more interview opportunities'],
-      status:'active',   startDate:'2025-10-30', color:'#ef4444' },
-    { id:'c6',  name:'Ezekiel Kuang',        role:'Consumer Insights & Analytics Strategist (15 yrs)', targetRole:'Senior Insights / Growth Strategy Lead (FMCG or Tech)',
-      goals:['Transition into digital marketing and growth strategy roles, leveraging insights background','Build practical digital marketing portfolio through real campaign experience','Achieve financial sustainability within 3–6 months via employment or consulting clients'],
-      status:'active',   startDate:'2026-03-03', color:'#06b6d4' },
-    { id:'c7',  name:'Jude Ang',             role:'Finance Leader & Transformation Expert (20+ yrs)', targetRole:'Finance Director / Strategic Advisor (SGD 12k)',
-      goals:['Build LinkedIn thought leadership and visibility to attract right-fit senior opportunities','Reframe positioning: from job seeker to strategic finance transformation advisor','Find a role with real ownership, team leadership, and tangible business impact'],
-      status:'active',   startDate:'2025-09-18', color:'#f97316' },
-    { id:'c8',  name:'Munifah',              role:'MICE & Events Professional (12+ yrs)',         targetRole:'Hybrid Event Marketing Manager',
-      goals:['Secure a hybrid event + digital marketing role with better culture and management fit','Apply BCG digital marketing upskilling to strengthen applications for marketing-integrated roles','Shift from pure MICE execution toward brand-aligned, in-house event management'],
-      status:'active',   startDate:'2025-11-26', color:'#ec4899' },
-    { id:'c9',  name:'Ryan Han',             role:'Music Teacher & Creative Entrepreneur',        targetRole:'Independent Creative Founder (Music + Comics IP)',
-      goals:['Launch social media brand (IG, TikTok, YouTube) and publish content consistently','Build a scalable IP combining music and manga/webtoon storytelling into one creative universe','Transition from teaching as primary income to sustainable creative entrepreneurship'],
-      status:'active',   startDate:'2025-09-17', color:'#84cc16' },
-    { id:'c10', name:'Six Chan Sani',        role:'MICE & Events Professional (12+ yrs)',         targetRole:'Event Marketing Manager (Tech / Digital-First)',
-      goals:['Move into event marketing roles within tech or digital-first companies','Build a digital marketing portfolio to complement strong MICE operations background','Negotiate successfully into hybrid event + marketing coordinator/manager positions'],
-      status:'active',   startDate:'2025-12-10', color:'#a855f7' },
-    { id:'c11', name:'Tan Christie',         role:'Education Professional & Enrichment Center Owner', targetRole:'Education Entrepreneur / Community Development Role',
-      goals:['Establish consistent group classes and develop a recognisable curriculum brand','Strengthen professional positioning in the education and community sector','Maintain career optionality: keep networks warm for PA/CDC/social service opportunities'],
-      status:'active',   startDate:'2026-03-03', color:'#14b8a6' },
-    { id:'c12', name:'Tan Suan Meng (Don)',  role:'Professional (Career Transition)',             targetRole:'New Career Role (TBD)',
-      goals:['Define target role and build a clear 60-second career narrative','Refresh CV and LinkedIn to reflect current strengths and aspirations','Execute a targeted, structured job search with weekly application and networking goals'],
-      status:'active',   startDate:'2026-01-15', color:'#6366f1' },
-    { id:'c13', name:'Teo Li Kun Rachel',    role:'Administrative Professional (20+ yrs)',        targetRole:'Administrative Executive / EA/PA (Part-Time / Contract)',
-      goals:['Secure a part-time or contract admin role that fits schedule and health constraints','Communicate professional value confidently and clearly in interviews','Increase LinkedIn activity and networking to expand reach beyond job portals'],
-      status:'inactive', startDate:'2025-09-16', color:'#e11d48' },
-  ];
-
-  const sessions = [
-    // Aileen Chow
-    { id:'s1',  coacheeId:'c1',  date:'2026-03-24', time:'10:00', notes:'Aileen presented her CAP. Discussed the tension between returning to financial services (less stress, structured) vs. pivoting to education or nonprofit. She has strong marketing bones but is underselling herself. Key insight: her 10-month career break is a feature, not a bug — it shows intentionality.', nextSteps:'Revise LinkedIn headline and summary to lead with marketing expertise, not the career gap. List 5 target companies across FS and education sectors.', duration:60 },
-    // Alex Lee
-    { id:'s2',  coacheeId:'c2',  date:'2025-10-09', time:'14:00', notes:'First coaching session. Alex has solid ecommerce fundamentals but his resume reads as a job list, not an achievement story. His RIASEC profile (E-I-S) points toward commercial roles where he can build and influence. Discussed importance of quantifying wins and narrowing target sector.', nextSteps:'Rewrite top 3 resume bullet points with quantified outcomes. Research 5 target companies in ecommerce/digital and note what each role requires.', duration:60 },
-    // Christopher Chong
-    { id:'s3',  coacheeId:'c3',  date:'2025-12-04', time:'11:00', notes:'Christopher is commercially strong — 14 years APAC, drove US$1.2M new business, 400x YoY growth in a segment. But his interview narrative meanders. We worked on the STAR framework and applied it to his top 3 stories. The fragrance-to-ingredients cross-industry background is a differentiator, not a liability.', nextSteps:'Rewrite 3 key experience bullets using STAR format. Identify and apply to 3 APAC regional commercial leadership roles before end of month.', duration:60 },
-    // Chuah Li Ping (Jaz)
-    { id:'s4',  coacheeId:'c4',  date:'2025-09-24', time:'10:00', notes:'Jaz left i-PRO in July after the role pivoted toward aggressive hunter targets — misaligned with her strengths as a relationship builder and account farmer. She has 15+ years of APAC account servicing, distributor management, and workshop facilitation. Strong candidate for CS/account management. Key work: repositioning the narrative away from "sales" toward "client success".', nextSteps:'Quantify 3 APAC account wins and partner/distributor achievements for resume. Research ACLP certification pathway as a parallel track.', duration:60 },
-    { id:'s5',  coacheeId:'c4',  date:'2026-01-15', time:'10:00', notes:'Follow-up session. Jaz has updated her resume and is getting more traction. Reviewed 2 interview debriefs — she needs to speak more confidently about scope and impact. Practised the "tell me about yourself" response with a farmer/customer success frame.', nextSteps:'Apply to 5 account management / customer success roles this week. Follow up with 2 recruitment agencies registered with last month.', duration:60 },
-    // Desmond Yong
-    { id:'s6',  coacheeId:'c5',  date:'2025-10-30', time:'14:00', notes:'Desmond has impressive operational breadth — 20+ years across admin, HR support, procurement, and office management. Main challenge is age discrimination and LinkedIn invisibility. He is introverted and avoids sales/customer-facing work, which narrows the funnel. Focus: reframe experience as an asset, not a liability. Agreed to target government-adjacent, healthcare, and MNC shared services.', nextSteps:'Add professional photo and update LinkedIn headline to "Administrative Professional | 20+ Years | Office Management & HR Support". Register with 2 recruitment agencies specialising in admin roles.', duration:60 },
-    // Ezekiel Kuang
-    { id:'s7',  coacheeId:'c6',  date:'2026-03-03', time:'11:00', notes:'Ezekiel has a compelling background — 15 years in consumer insights, digital analytics, and market intelligence across FMCG and consulting. Now transitioning into digital marketing/growth strategy. He is starting a real campaign for his partner\'s durian business as a portfolio piece. Financial pressure is real — needs traction in 3–6 months. Reviewed his personal positioning and resume. Strong analytical storytelling, but needs to downplay "researcher" and elevate "growth strategist".', nextSteps:'Launch the durian business digital campaign (IG + targeted ads). Revise resume title and summary to lead with "Growth Strategy" framing. Reach out to 3 FMCG/tech connections on LinkedIn this week.', duration:60 },
-    // Jude Ang
-    { id:'s8',  coacheeId:'c7',  date:'2025-09-18', time:'10:00', notes:'Jude is a senior finance leader who delivered $14M+ in savings and led ERP rollouts across organisations. His challenge is repositioning: he searches like a job-seeker but should be attracting like a strategic advisor. Discussed building a LinkedIn presence through thought leadership — starting with short posts on finance transformation themes. Target sectors: SMEs, startups, NGOs where he can have real ownership.', nextSteps:'Reach out to 5 senior finance contacts to reconnect and share that he is exploring new opportunities. Draft first LinkedIn post on finance transformation leadership.', duration:60 },
-    { id:'s9',  coacheeId:'c7',  date:'2026-02-10', time:'10:00', notes:'Jude restarted active search in January as planned. Reviewed 4 applications — cover letters are strong but JD targeting is too broad. Tightened criteria to Finance Director / Strategic CFO roles at SMEs and NGOs. He has published 3 LinkedIn articles — gaining traction slowly. Encouraged to engage with comments and reach out directly to CEOs of target organisations.', nextSteps:'Apply to 3 pre-selected Finance Director roles this week. Comment on 5 LinkedIn posts from target CEOs and hiring managers.', duration:60 },
-    // Munifah
-    { id:'s10', coacheeId:'c8',  date:'2025-11-26', time:'14:00', notes:'Munifah has 12+ years of MICE and conference production — strong project management, stakeholder handling, and logistics. Currently searching since October, had 4–5 interviews with 3 rejections and 2 pending. Year-end market is slow. Key positioning issue: she is applying to pure events ops roles when her target should be hybrid event + marketing positions. Reviewed CAP and agreed on repositioned headline and target role.', nextSteps:'Rewrite LinkedIn headline to "Event Marketing & Management Professional | 12+ Years MICE Experience". Follow up on 2 pending interview outcomes. Customise applications to highlight marketing-adjacent experience.', duration:60 },
-    { id:'s11', coacheeId:'c8',  date:'2025-12-09', time:'14:00', notes:'Second session. Munifah received 1 rejection and 1 offer (below expectations). Discussed whether to negotiate or decline. Agreed to counteroffer — she should not undervalue her experience. BCG digital marketing module nearly complete — a strong differentiator for hybrid roles. Updated action plan and application strategy.', nextSteps:'Send counteroffer for pending role. Apply to 5 more event marketing positions at tech or in-house companies. Add BCG digital certification to LinkedIn once complete.', duration:60 },
-    // Ryan Han
-    { id:'s12', coacheeId:'c9',  date:'2025-09-17', time:'16:00', notes:'Ryan is a creative entrepreneur with strong vision — music tied to manga storytelling, building a character-driven IP universe. Currently earns via private music teaching and busking. Challenges: no social media presence, overwhelmed by competing priorities, limited business and marketing knowledge. Session focused on cutting through the noise: pick ONE platform to start, build the habit of publishing before optimising for reach.', nextSteps:'Set up Instagram and TikTok accounts this week under one consistent brand name. Post first piece of content (sketch + music clip) before next session.', duration:60 },
-    // Six Chan Sani
-    { id:'s13', coacheeId:'c10', date:'2025-12-10', time:'11:00', notes:'Six has the same core profile as other MICE professionals in BCG Rise — 12+ years events, strong execution, now pivoting toward marketing-integrated roles. Her CES (Conventional-Enterprising-Social) DISC profile means she is structured, commercially savvy, and people-oriented — a good fit for event marketing in tech. She needs to reframe MICE operations as "integrated campaign execution" and target in-house event marketing roles.', nextSteps:'Update resume to position MICE experience as integrated event marketing. Apply to 3 event marketing roles at tech companies this week. Post one LinkedIn update on a conference or event industry insight.', duration:60 },
-    // Tan Christie
-    { id:'s14', coacheeId:'c11', date:'2026-03-03', time:'14:00', notes:'Christie runs an enrichment center and coaches students. She has Artistic-Social-Enterprising strengths — great at curriculum design, mentoring, and building community. Her immediate goal is business growth: consistent group classes, develop a recognisable curriculum, potentially bring in tutors. Secondary goal is staying viable for employment in education or public sector. Mapped out a 3-goal framework: Business Growth, Professional Positioning, Career Optionality.', nextSteps:'Design curriculum outline for signature group class program. Reconnect with 2 education professionals about possible curriculum collaboration.', duration:60 },
-    // Tan Suan Meng (Don)
-    { id:'s15', coacheeId:'c12', date:'2026-01-15', time:'10:00', notes:'Initial session with Don. He has a solid professional background and is navigating a career transition. Worked on defining what "success" looks like in his next role — both tangible (salary, scope) and intangible (culture, autonomy). His CV is comprehensive but needs to be tailored to a clear target. Agreed to do role research before next session.', nextSteps:'List 3 potential target roles and research what each requires in terms of skills and experience. Begin tailoring CV to best-fit role.', duration:60 },
-    // Teo Li Kun Rachel
-    { id:'s16', coacheeId:'c13', date:'2025-09-16', time:'14:00', notes:'Rachel has deep admin experience (20+ years) but faces similar challenges to Desmond — age bias, limited digital visibility, and passive job search behaviour. She prefers afternoon shifts and part-time work due to health constraints. Discussed targeting government-adjacent organisations, healthcare, and MNC shared services. Key priority: get visible on LinkedIn and register with admin-focused agencies.', nextSteps:'Set up LinkedIn profile with professional photo, headline, and summary. Register with JobsDB and 2 recruitment agencies specialising in admin/contract roles.', duration:60 },
-  ];
-
-  const actions = [
-    // Aileen Chow
-    { id:'a1',  coacheeId:'c1',  title:'Revise LinkedIn headline and summary to lead with marketing expertise', dueDate:from(5),  completed:false, priority:'high'   },
-    { id:'a2',  coacheeId:'c1',  title:'List 5 target companies across financial services and education sectors', dueDate:from(7),  completed:false, priority:'high'   },
-    { id:'a3',  coacheeId:'c1',  title:'Practise articulating career story: banking → break → next chapter', dueDate:from(3),  completed:false, priority:'medium' },
-    // Alex Lee
-    { id:'a4',  coacheeId:'c2',  title:'Rewrite top 3 resume bullets with quantified outcomes',                dueDate:ago(14),  completed:true,  priority:'high'   },
-    { id:'a5',  coacheeId:'c2',  title:'Apply to 5 ecommerce/digital roles and track responses',               dueDate:from(5),  completed:false, priority:'high'   },
-    { id:'a6',  coacheeId:'c2',  title:'Research salary benchmarks for target digital roles ($3k–$3.5k)',       dueDate:ago(7),   completed:true,  priority:'medium' },
-    // Christopher Chong
-    { id:'a7',  coacheeId:'c3',  title:'Rewrite 3 key experience bullets using STAR format',                   dueDate:from(5),  completed:false, priority:'high'   },
-    { id:'a8',  coacheeId:'c3',  title:'Apply to 3 APAC regional commercial leadership roles',                 dueDate:from(10), completed:false, priority:'high'   },
-    { id:'a9',  coacheeId:'c3',  title:'Complete BCG digital marketing module and add to LinkedIn',             dueDate:ago(14),  completed:true,  priority:'medium' },
-    // Chuah Li Ping (Jaz)
-    { id:'a10', coacheeId:'c4',  title:'Quantify 3 APAC account wins and distributor achievements on resume',  dueDate:ago(60),  completed:true,  priority:'high'   },
-    { id:'a11', coacheeId:'c4',  title:'Apply to 5 account management / customer success roles this week',     dueDate:from(3),  completed:false, priority:'high'   },
-    { id:'a12', coacheeId:'c4',  title:'Research and enroll in ACLP certification pathway',                    dueDate:from(21), completed:false, priority:'medium' },
-    // Desmond Yong
-    { id:'a13', coacheeId:'c5',  title:'Update LinkedIn profile with photo, headline, and recent experience',  dueDate:ago(30),  completed:true,  priority:'high'   },
-    { id:'a14', coacheeId:'c5',  title:'Register with 2 admin-focused recruitment agencies',                   dueDate:ago(21),  completed:true,  priority:'high'   },
-    { id:'a15', coacheeId:'c5',  title:'Apply to 3 part-time/contract admin roles at government-adjacent orgs', dueDate:from(5),  completed:false, priority:'medium' },
-    // Ezekiel Kuang
-    { id:'a16', coacheeId:'c6',  title:'Launch digital marketing campaign for partner\'s durian business',     dueDate:from(14), completed:false, priority:'high'   },
-    { id:'a17', coacheeId:'c6',  title:'Revise resume title and summary to lead with "Growth Strategy"',       dueDate:from(5),  completed:false, priority:'high'   },
-    { id:'a18', coacheeId:'c6',  title:'Reach out to 3 FMCG/tech connections on LinkedIn this week',          dueDate:from(7),  completed:false, priority:'medium' },
-    // Jude Ang
-    { id:'a19', coacheeId:'c7',  title:'Reconnect with 5 senior finance contacts and signal availability',     dueDate:ago(90),  completed:true,  priority:'high'   },
-    { id:'a20', coacheeId:'c7',  title:'Apply to 3 Finance Director / Strategic CFO roles at SMEs/NGOs',       dueDate:from(7),  completed:false, priority:'high'   },
-    { id:'a21', coacheeId:'c7',  title:'Publish LinkedIn article on finance transformation leadership',         dueDate:from(5),  completed:false, priority:'medium' },
-    // Munifah
-    { id:'a22', coacheeId:'c8',  title:'Send counteroffer for pending job offer',                              dueDate:ago(60),  completed:true,  priority:'high'   },
-    { id:'a23', coacheeId:'c8',  title:'Apply to 5 event marketing positions at tech / in-house companies',    dueDate:ago(30),  completed:true,  priority:'high'   },
-    { id:'a24', coacheeId:'c8',  title:'Add BCG digital certification to LinkedIn once complete',              dueDate:from(7),  completed:false, priority:'medium' },
-    // Ryan Han
-    { id:'a25', coacheeId:'c9',  title:'Set up Instagram and TikTok under one consistent brand name',          dueDate:ago(90),  completed:true,  priority:'high'   },
-    { id:'a26', coacheeId:'c9',  title:'Publish 1 piece of content per week (sketch + music clip)',            dueDate:from(3),  completed:false, priority:'high'   },
-    { id:'a27', coacheeId:'c9',  title:'Research Enterprise SG and NAC grant opportunities',                   dueDate:from(14), completed:false, priority:'medium' },
-    // Six Chan Sani
-    { id:'a28', coacheeId:'c10', title:'Update resume to position MICE experience as integrated event marketing', dueDate:ago(7),   completed:true,  priority:'high'   },
-    { id:'a29', coacheeId:'c10', title:'Apply to 3 event marketing roles at tech companies',                   dueDate:from(5),  completed:false, priority:'high'   },
-    { id:'a30', coacheeId:'c10', title:'Post one LinkedIn update on a conference/event industry insight',       dueDate:from(3),  completed:false, priority:'low'    },
-    // Tan Christie
-    { id:'a31', coacheeId:'c11', title:'Design curriculum outline for signature group class program',           dueDate:from(10), completed:false, priority:'high'   },
-    { id:'a32', coacheeId:'c11', title:'Reconnect with 2 education professionals about curriculum collaboration', dueDate:ago(7),   completed:true,  priority:'medium' },
-    { id:'a33', coacheeId:'c11', title:'Create simple landing page or social presence for enrichment center',   dueDate:from(21), completed:false, priority:'medium' },
-    // Tan Suan Meng (Don)
-    { id:'a34', coacheeId:'c12', title:'List 3 potential target roles and research requirements for each',      dueDate:ago(30),  completed:true,  priority:'high'   },
-    { id:'a35', coacheeId:'c12', title:'Tailor CV to best-fit target role',                                    dueDate:from(5),  completed:false, priority:'high'   },
-    { id:'a36', coacheeId:'c12', title:'Apply to 3 roles aligned with defined career direction',               dueDate:from(10), completed:false, priority:'medium' },
-    // Teo Li Kun Rachel
-    { id:'a37', coacheeId:'c13', title:'Set up LinkedIn profile with photo, headline, and summary',            dueDate:ago(90),  completed:true,  priority:'high'   },
-    { id:'a38', coacheeId:'c13', title:'Register with JobsDB and 2 admin-focused recruitment agencies',        dueDate:ago(85),  completed:true,  priority:'high'   },
-    { id:'a39', coacheeId:'c13', title:'Apply to 3 part-time admin roles with flexible/afternoon hours',       dueDate:ago(80),  completed:true,  priority:'medium' },
-  ];
-
-  const pipeline = [
-    { id:'p1', name:'Linda Goh',       email:'linda.goh@email.com',     stage:'lead',     notes:'BCG Rise alumni referral. HR generalist wanting to pivot into L&D or OD. Will reach out next week.' },
-    { id:'p2', name:'Marcus Wee',      email:'marcus.w@email.com',       stage:'lead',     notes:'LinkedIn cold outreach. Mid-career engineer exploring management consulting transition.' },
-    { id:'p3', name:'Priscilla Tan',   email:'pri.tan@email.com',        stage:'intro',    notes:'Discovery call booked this Friday. 8-year marketing manager looking to move into a VP role.' },
-    { id:'p4', name:'Ben Loh',         email:'ben.loh@email.com',        stage:'intro',    notes:'Strong first call. Finance professional wanting to become an independent advisor. High potential fit.' },
-    { id:'p5', name:'Evelyn Chua',     email:'evelyn.c@email.com',       stage:'proposal', notes:'3-session proposal sent Mon. Deciding between Cassan and one other coach — follow up by end of week.' },
-    { id:'p6', name:'Wayne Seah',      email:'wayne.s@email.com',        stage:'pending',  notes:'Very interested but waiting for company training budget approval. Expected early May.' },
-    { id:'p7', name:'Nadia Rahman',    email:'nadia.r@email.com',        stage:'won',      notes:'Signed 3-session package. First session scheduled next Tuesday.' },
-    { id:'p8', name:'Clement Ho',      email:'clement.h@email.com',      stage:'won',      notes:'Ongoing — 4 sessions completed, 2 remaining. Strong progress on interview confidence.' },
-    { id:'p9', name:'Fiona Yap',       email:'fiona.y@email.com',        stage:'lost',     notes:'Went with a cheaper option. Warm relationship — keep in touch for future cycle or referrals.' },
-  ];
-
-  localStorage.setItem('cc_coachees',  JSON.stringify(coachees));
-  localStorage.setItem('cc_sessions',  JSON.stringify(sessions));
-  localStorage.setItem('cc_actions',   JSON.stringify(actions));
-  localStorage.setItem('cc_pipeline',  JSON.stringify(pipeline));
-}
-
-// ─── Data access ──────────────────────────────────────────────────────────────
-const get = k => JSON.parse(localStorage.getItem(k) || '[]');
-const set = (k,v) => localStorage.setItem(k, JSON.stringify(v));
-
-const getCoachees = () => get('cc_coachees');
-const getSessions = () => get('cc_sessions');
-const getActions  = () => get('cc_actions');
-const getPipeline = () => get('cc_pipeline');
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-const initials = name => name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-
-function progressPct(cid) {
-  const acts = getActions().filter(a => a.coacheeId === cid);
-  return acts.length ? Math.round(acts.filter(a=>a.completed).length / acts.length * 100) : 0;
-}
-
-function sessionCount(cid) {
-  return getSessions().filter(s => s.coacheeId === cid && s.date <= todayStr && s.notes).length;
-}
-
-function priorityBadge(p) {
-  const cls = { high:'badge-red', medium:'badge-yellow', low:'badge-gray' };
-  return `<span class="badge ${cls[p]}">${p}</span>`;
-}
-
-// ─── Navigation ───────────────────────────────────────────────────────────────
-function nav(page, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('pg-' + page).classList.add('active');
-  if (el) el.classList.add('active');
-  const renders = { dashboard:renderDash, coachees:renderCoachees, sessions:renderSessions, pipeline:renderPipeline };
-  renders[page] && renders[page]();
-}
-
-// ─── Dashboard ────────────────────────────────────────────────────────────────
-function renderDash() {
-  const coachees = getCoachees(), sessions = getSessions(), actions = getActions(), pipeline = getPipeline();
-  const coacheeMap = Object.fromEntries(coachees.map(c => [c.id, c]));
-
-  document.getElementById('dash-date').textContent =
-    today.toLocaleDateString('en-SG', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-
-  const active       = coachees.filter(c => c.status==='active').length;
-  const todaySes     = sessions.filter(s => s.date === todayStr);
-  const openActs     = actions.filter(a => !a.completed);
-  const pipeActive   = pipeline.filter(p => !['won','lost'].includes(p.stage)).length;
-
-  // Metrics
-  document.getElementById('dash-metrics').innerHTML = `
-    <div class="metric-card">
-      <div class="metric-icon" style="background:#eff6ff">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-      </div>
-      <div class="metric-label">Active Coachees</div>
-      <div class="metric-value">${active}</div>
-      <div class="metric-sub">${coachees.length} total enrolled</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-icon" style="background:#f0fdf4">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <div class="metric-label">Today's Sessions</div>
-      <div class="metric-value">${todaySes.length}</div>
-      <div class="metric-sub">${sessions.filter(s=>s.notes).length} total logged</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-icon" style="background:#fff7ed">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      </div>
-      <div class="metric-label">Open Actions</div>
-      <div class="metric-value">${openActs.length}</div>
-      <div class="metric-sub">${actions.filter(a=>a.completed).length} completed</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-icon" style="background:#fdf4ff">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <div class="metric-label">Pipeline Active</div>
-      <div class="metric-value">${pipeActive}</div>
-      <div class="metric-sub">${pipeline.filter(p=>p.stage==='won').length} won this cycle</div>
-    </div>
-  `;
-
-  // Today's sessions
-  const todayEl = document.getElementById('dash-today');
-  if (!todaySes.length) {
-    todayEl.innerHTML = '<div class="empty">No sessions scheduled today</div>';
-  } else {
-    todayEl.innerHTML = todaySes.map(s => {
-      const c = coacheeMap[s.coacheeId];
-      return `<div class="today-row">
-        <div class="today-time">${s.time || '—'}</div>
-        <div class="avatar" style="background:${c?.color};width:30px;height:30px;font-size:11px">${initials(c?.name||'?')}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:600">${c?.name}</div>
-          <div style="font-size:11px;color:var(--fg-muted)">${s.duration} min · ${c?.role}</div>
+function renderDashboard() {
+  // ── Live date & greeting ──────────────────────────
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const dayName = now.toLocaleDateString('en-SG', {weekday:'long'});
+  const dateStr = now.toLocaleDateString('en-SG', {day:'numeric', month:'short', year:'numeric'});
+  // ISO week number
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const weekNum = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+  const greetEl = document.getElementById('dashboard-greeting');
+  const dateEl = document.getElementById('dashboard-date');
+  if(greetEl) greetEl.textContent = greeting;
+  if(dateEl) dateEl.textContent = `${dayName}, ${dateStr} · Week ${weekNum}`;
+  // ── Today's Sessions ──────────────────────────────
+  const sessEl = document.getElementById('dashboard-sessions');
+  if(sessEl) {
+    sessEl.innerHTML = todaySessions.map(s => `
+      <div class="session-item">
+        <div class="avatar" style="background:${s.bg};color:${s.color}">${s.initials}</div>
+        <div class="session-info">
+          <div class="session-name">${s.name}</div>
+          <div class="session-meta">${s.goal} · Session ${s.sessionNum} of 3 · ${s.time}</div>
         </div>
-      </div>`;
-    }).join('');
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span class="badge ${s.statusClass}">${s.statusLabel}</span>
+          ${s.meetUrl ? `
+            <a href="${s.meetUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--info);text-decoration:none;background:var(--info-light);transition:background 0.15s" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='var(--info-light)'">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="10" height="8" rx="1.5"/><path d="M11 7l4-2v6l-4-2"/></svg>
+              Join
+            </a>` : ''}
+        </div>
+      </div>
+    `).join('');
   }
 
-  // Open action items (top 5)
-  const actEl = document.getElementById('dash-actions');
-  const top5 = openActs.slice(0,5);
-  if (!top5.length) {
-    actEl.innerHTML = '<div class="empty">All caught up!</div>';
-  } else {
-    actEl.innerHTML = top5.map(a => {
-      const c = coacheeMap[a.coacheeId];
-      const overdue = a.dueDate < todayStr;
-      return `<div class="action-row">
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:500">${a.title}</div>
-          <div style="font-size:11px;color:var(--fg-muted);margin-top:2px">
-            ${c?.name} · <span style="color:${overdue?'var(--danger)':'var(--fg-muted)'}">${overdue?'Overdue: ':'Due: '}${fmtD(a.dueDate)}</span>
-          </div>
-        </div>
-        ${priorityBadge(a.priority)}
-      </div>`;
-    }).join('');
+  // ── Action Items Due (CAP) ─────────────────────────
+  // Only show unchecked CAPs whose session date is in the past (before today)
+  const capEl = document.getElementById('dashboard-cap-items');
+  if(!capEl || typeof profiles === 'undefined') return;
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  function parseSessionDate(dateStr) {
+    // dateStr format: 'Mar 20', 'Apr 10', 'Apr 24' etc. — assume current year
+    if(!dateStr || dateStr === '—') return null;
+    const d = new Date(dateStr + ' ' + today.getFullYear());
+    if(isNaN(d)) return null;
+    d.setHours(0,0,0,0);
+    return d;
   }
 
-  // Pipeline snapshot
-  document.getElementById('dash-pipeline').innerHTML =
-    `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">` +
-    STAGES.map(stage => {
-      const count = pipeline.filter(p=>p.stage===stage).length;
-      return `<div style="flex:1;min-width:80px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${STAGE_COLOR[stage]}">${STAGE_LABEL[stage]}</div>
-        <div style="font-size:24px;font-weight:700;margin:4px 0">${count}</div>
-      </div>`;
-    }).join('') + `</div>`;
-}
-
-// ─── Coachees ─────────────────────────────────────────────────────────────────
-function renderCoachees() {
-  const coachees = getCoachees();
-  document.getElementById('coachees-sub').textContent =
-    `${coachees.filter(c=>c.status==='active').length} active · ${coachees.length} total`;
-  filterCoachees();
-}
-
-function filterCoachees() {
-  const q  = document.getElementById('srch').value.toLowerCase();
-  const fl = document.getElementById('flt').value;
-  const list = getCoachees().filter(c =>
-    (c.name.toLowerCase().includes(q) || c.role.toLowerCase().includes(q)) &&
-    (fl === 'all' || c.status === fl)
-  );
-  const el = document.getElementById('coachee-list');
-  if (!list.length) { el.innerHTML = '<div class="empty">No coachees found</div>'; return; }
-
-  el.innerHTML = list.map(c => {
-    const pct      = progressPct(c.id);
-    const sc       = sessionCount(c.id);
-    const openActs = getActions().filter(a => a.coacheeId===c.id && !a.completed).length;
-    return `<div class="coachee-card" onclick="openProfile('${c.id}')">
-      <div class="avatar" style="background:${c.color};width:44px;height:44px;font-size:15px">${initials(c.name)}</div>
-      <div style="flex:1">
-        <div class="coachee-name">${c.name}</div>
-        <div class="coachee-role">${c.role} → ${c.targetRole}</div>
-        <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
-          <span class="badge ${c.status==='active'?'badge-green':'badge-gray'}">${c.status}</span>
-          <span style="font-size:11px;color:var(--fg-muted)">${sc} sessions · ${openActs} open actions</span>
-        </div>
-      </div>
-      <div class="coachee-prog">
-        <div class="prog-label"><span>Actions</span><span>${pct}%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${c.color}"></div></div>
-        <div style="font-size:11px;color:var(--fg-muted);margin-top:4px">Since ${fmtD(c.startDate)}</div>
-      </div>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--fg-muted)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>`;
-  }).join('');
-}
-
-// ─── Profile ──────────────────────────────────────────────────────────────────
-function openProfile(id) {
-  const c = getCoachees().find(x => x.id===id);
-  if (!c) return;
-
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('pg-profile').classList.add('active');
-
-  const sessions = getSessions().filter(s => s.coacheeId===id && s.notes).sort((a,b) => b.date.localeCompare(a.date));
-  const actions  = getActions().filter(a => a.coacheeId===id);
-  const pct      = progressPct(id);
-
-  document.getElementById('profile-content').innerHTML = `
-    <div class="profile-hdr">
-      <div class="avatar" style="background:${c.color};width:70px;height:70px;font-size:24px">${initials(c.name)}</div>
-      <div class="profile-meta">
-        <h2>${c.name}</h2>
-        <p>${c.role} → <strong>${c.targetRole}</strong></p>
-        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-          <span class="badge ${c.status==='active'?'badge-green':'badge-gray'}">${c.status}</span>
-          <span style="font-size:12px;color:var(--fg-muted)">Coaching since ${fmtD(c.startDate)}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="g2 section-gap">
-      <div class="card">
-        <div class="card-title">Goals</div>
-        ${c.goals.map(g => `<div class="goal-row"><div class="goal-dot"></div>${g}</div>`).join('')}
-      </div>
-      <div class="card">
-        <div class="card-title">Progress Overview</div>
-        <div style="margin-bottom:14px">
-          <div class="prog-label"><span>Actions completed</span><span>${pct}%</span></div>
-          <div class="progress-bar" style="height:9px"><div class="progress-fill" style="width:${pct}%;background:${c.color}"></div></div>
-        </div>
-        <div style="display:flex;gap:20px">
-          <div><div style="font-size:24px;font-weight:700">${sessionCount(id)}</div><div style="font-size:11px;color:var(--fg-muted)">Sessions</div></div>
-          <div><div style="font-size:24px;font-weight:700">${actions.filter(a=>a.completed).length}</div><div style="font-size:11px;color:var(--fg-muted)">Done</div></div>
-          <div><div style="font-size:24px;font-weight:700">${actions.filter(a=>!a.completed).length}</div><div style="font-size:11px;color:var(--fg-muted)">Open</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-bar">
-      <div class="tab active" onclick="switchTab(this,'tab-ses')">Session History</div>
-      <div class="tab" onclick="switchTab(this,'tab-act')">Action Items</div>
-    </div>
-
-    <div id="tab-ses" class="tab-panel active">
-      <div class="card">
-        ${sessions.length ? sessions.map(s => {
-          const d = new Date(s.date);
-          return `<div class="ses-row">
-            <div class="ses-datebox">
-              <div class="ses-month">${d.toLocaleDateString('en',{month:'short'})}</div>
-              <div class="ses-day">${d.getDate()}</div>
-            </div>
-            <div class="ses-body">
-              <div class="ses-dur">${s.duration} min session</div>
-              <div class="ses-notes">${s.notes}</div>
-              ${s.nextSteps ? `<div class="ses-next">→ ${s.nextSteps}</div>` : ''}
-            </div>
-          </div>`;
-        }).join('') : '<div class="empty">No sessions recorded yet</div>'}
-      </div>
-    </div>
-
-    <div id="tab-act" class="tab-panel">
-      <div class="card">
-        ${actions.length ? actions
-          .sort((a,b) => a.completed - b.completed || a.dueDate.localeCompare(b.dueDate))
-          .map(a => {
-            const overdue = !a.completed && a.dueDate < todayStr;
-            return `<div class="action-row">
-              <div class="chk ${a.completed?'done':''}" onclick="toggleAction('${a.id}',this)"></div>
-              <div class="action-title-text ${a.completed?'done':''}">${a.title}</div>
-              <span style="font-size:11px;color:${overdue?'var(--danger)':'var(--fg-muted)'};margin-right:8px">
-                ${overdue?'Overdue: ':'Due: '}${fmtD(a.dueDate)}
-              </span>
-              ${priorityBadge(a.priority)}
-            </div>`;
-          }).join('') : '<div class="empty">No action items yet</div>'}
-      </div>
-    </div>
-  `;
-}
-
-function switchTab(el, targetId) {
-  el.closest('.tab-bar').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById(targetId).classList.add('active');
-}
-
-function toggleAction(id, el) {
-  const actions = getActions();
-  const a = actions.find(x => x.id===id);
-  if (!a) return;
-  a.completed = !a.completed;
-  set('cc_actions', actions);
-  el.classList.toggle('done', a.completed);
-  el.nextElementSibling.classList.toggle('done', a.completed);
-}
-
-// ─── Sessions calendar ────────────────────────────────────────────────────────
-let weekOffset = 0;
-
-function getWeekDays(offset) {
-  const d = new Date(today);
-  const dow = d.getDay();
-  const diff = d.getDate() - dow + (dow===0 ? -6 : 1); // Monday
-  d.setDate(diff + offset*7);
-  return Array.from({length:7}, (_,i) => { const x=new Date(d); x.setDate(d.getDate()+i); return x; });
-}
-
-function shiftWeek(dir) { weekOffset += dir; renderSessions(); }
-
-function renderSessions() {
-  const days = getWeekDays(weekOffset);
-  const coacheeMap = Object.fromEntries(getCoachees().map(c => [c.id, c]));
-  const sessions   = getSessions();
-
-  document.getElementById('week-label').textContent =
-    `${days[0].toLocaleDateString('en',{month:'short',day:'numeric'})} – ${days[6].toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'})}`;
-
-  document.getElementById('week-grid').innerHTML = days.map(d => {
-    const ds       = d.toISOString().slice(0,10);
-    const isToday  = ds === todayStr;
-    const daySes   = sessions.filter(s => s.date===ds).sort((a,b) => (a.time||'').localeCompare(b.time||''));
-    return `<div class="day-col ${isToday?'today':''}">
-      <div class="day-header">
-        <div class="day-name">${DAY_NAMES[d.getDay()]}</div>
-        <div class="day-num">${d.getDate()}</div>
-      </div>
-      ${daySes.map(s => {
-        const c = coacheeMap[s.coacheeId];
-        return `<div class="ses-chip" onclick="openProfile('${s.coacheeId}')">
-          <div class="ses-time">${s.time||'—'}</div>
-          <div class="ses-who">${c?.name?.split(' ')[0]||'?'}</div>
-          <div style="font-size:10px;color:var(--fg-muted);margin-top:1px">${s.duration}min</div>
-        </div>`;
-      }).join('')}
-    </div>`;
-  }).join('');
-}
-
-// ─── Pipeline kanban ──────────────────────────────────────────────────────────
-function renderPipeline() {
-  const pipeline = getPipeline();
-  document.getElementById('kanban').innerHTML = STAGES.map(stage => {
-    const leads = pipeline.filter(p => p.stage===stage);
-    return `<div class="kanban-col">
-      <div class="kanban-header">
-        <span class="kanban-title" style="color:${STAGE_COLOR[stage]}">${STAGE_LABEL[stage]}</span>
-        <span class="kanban-count">${leads.length}</span>
-      </div>
-      <div class="drop-zone" id="zone-${stage}"
-        ondragover="onDragOver(event,this)"
-        ondragleave="onDragLeave(this)"
-        ondrop="onDrop(event,'${stage}')">
-        ${leads.map(renderLeadCard).join('')}
-      </div>
-    </div>`;
-  }).join('');
-  attachDrag();
-}
-
-function renderLeadCard(lead) {
-  return `<div class="lead-card" id="lc-${lead.id}" draggable="true" data-id="${lead.id}">
-    <div class="lead-name">${lead.name}</div>
-    <div class="lead-email">${lead.email}</div>
-    ${lead.notes ? `<div class="lead-notes">${lead.notes}</div>` : ''}
-  </div>`;
-}
-
-function attachDrag() {
-  document.querySelectorAll('.lead-card').forEach(card => {
-    card.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', card.dataset.id);
-      card.classList.add('dragging');
-    });
-    card.addEventListener('dragend', () => {
-      card.classList.remove('dragging');
-      document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+  const overdueCAPItems = [];
+  Object.keys(profiles).forEach(id => {
+    const p = profiles[id];
+    const capDefs = [
+      {actionId:`${id}_cap1`, label:'CAP 1st Session', coachee:p.name, dateStr:p.sessionList[0]?.date||'—'},
+      {actionId:`${id}_cap2`, label:'CAP 2nd Session', coachee:p.name, dateStr:p.sessionList[1]?.date||'—'},
+      {actionId:`${id}_cap3`, label:'CAP 3rd Session', coachee:p.name, dateStr:p.sessionList[2]?.date||'—'}
+    ];
+    capDefs.forEach(item => {
+      if(actionState[item.actionId]) return; // already sent — skip
+      const sessionDate = parseSessionDate(item.dateStr);
+      if(!sessionDate) return; // no date — skip
+      if(sessionDate < today) { // session is in the past and CAP not yet sent
+        const daysOverdue = Math.floor((today - sessionDate) / 86400000);
+        item.daysOverdue = daysOverdue;
+        item.dateLabel = item.dateStr;
+        overdueCAPItems.push(item);
+      }
     });
   });
+
+  // Sort by most overdue first
+  overdueCAPItems.sort((a,b) => b.daysOverdue - a.daysOverdue);
+
+  if(overdueCAPItems.length === 0) {
+    capEl.innerHTML = `<div style="font-size:13px;color:var(--muted);padding:8px 0;text-align:center">No overdue CAPs ✓</div>`;
+    return;
+  }
+
+  capEl.innerHTML = overdueCAPItems.map(item => {
+    const overdueText = item.daysOverdue === 0 ? 'Due today'
+      : item.daysOverdue === 1 ? 'Overdue · 1 day'
+      : `Overdue · ${item.daysOverdue} days`;
+    return `
+    <div class="action-item" id="dash-cap-wrap-${item.actionId}">
+      <div class="checkbox ${actionState[item.actionId]?'checked':''}" onclick="toggleCAPFromDashboard('${item.actionId}',this)" id="dash-cb-${item.actionId}">
+        ${actionState[item.actionId]?'<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+      </div>
+      <div style="flex:1">
+        <div class="action-text ${actionState[item.actionId]?'done-text':''}">${item.label} — ${item.coachee}</div>
+        <div class="action-due overdue">${overdueText} · Session: ${item.dateLabel}</div>
+      </div>
+      <span class="badge ${actionState[item.actionId]?'badge-green':'badge-red'}">${actionState[item.actionId]?'Sent':'Overdue'}</span>
+    </div>`;
+  }).join('');
 }
 
-function onDragOver(e, zone)  { e.preventDefault(); zone.classList.add('drag-over'); }
-function onDragLeave(zone)    { zone.classList.remove('drag-over'); }
+function toggleCAPFromDashboard(actionId, el) {
+  // Toggle state
+  actionState[actionId] = !actionState[actionId];
+  // Update dashboard checkbox
+  el.classList.toggle('checked');
+  el.innerHTML = actionState[actionId]
+    ? '<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    : '';
+  const wrap = document.getElementById('dash-cap-wrap-'+actionId);
+  if(wrap) {
+    const text = wrap.querySelector('.action-text');
+    if(text) text.classList.toggle('done-text', actionState[actionId]);
+    const badge = wrap.querySelector('.badge');
+    if(badge) { badge.className = actionState[actionId]?'badge badge-green':'badge badge-gray'; badge.textContent = actionState[actionId]?'Sent':'Pending'; }
+  }
+  // Sync back to profile page if it's open for the matching coachee
+  const profileCb = document.getElementById('cb-'+actionId);
+  if(profileCb) {
+    profileCb.classList.toggle('checked', actionState[actionId]);
+    profileCb.innerHTML = actionState[actionId]
+      ? '<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : '';
+    const profileText = document.getElementById('at-'+actionId);
+    if(profileText) profileText.classList.toggle('done-text', actionState[actionId]);
+    const profileWrap = document.getElementById('cap-wrap-'+actionId);
+    if(profileWrap) {
+      const pb = profileWrap.querySelector('.badge');
+      if(pb) { pb.className = actionState[actionId]?'badge badge-green':'badge badge-gray'; pb.textContent = actionState[actionId]?'Done':'Pending'; }
+    }
+  }
+  // If all sent, show completion message
+  setTimeout(renderDashboard, 300);
+}
 
-function onDrop(e, stage) {
+function navigate(page) {
+  document.querySelectorAll('.page,.board-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if(el) el.classList.add('active');
+  if(navMap[page]!==undefined) document.querySelectorAll('.nav-item')[navMap[page]].classList.add('active');
+  if(page==='dashboard') renderDashboard();
+}
+
+function showProfile(id) {
+  const p = profiles[id];
+  const completedCount = p.sessionProgress.filter(s=>s.status==='done').length;
+
+  // Header
+  document.getElementById('profile-header').innerHTML=`<div class="profile-avatar" style="background:${p.bg};color:${p.color}">${p.initials}</div><div style="flex:1"><div class="profile-name">${p.name}</div><div class="profile-role">${p.role}</div><div class="profile-tags">${p.tags.map(t=>`<span class="badge badge-gray">${t}</span>`).join('')}</div><div class="profile-meta" style="margin-top:12px"><div class="profile-meta-item"><strong>${completedCount} / 3</strong>Sessions done</div><div class="profile-meta-item"><strong>${p.start}</strong>Started</div><div class="profile-meta-item"><strong>${p.status}</strong>Status</div></div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">Coaching goal</div><div style="font-size:13px;font-weight:500;color:var(--text);max-width:200px">${p.goal}</div></div>`;
+
+  // Session progress with date, time, meet URL under each dot
+  const cc=p.sessionProgress[0].status==='done'?'var(--accent)':'var(--border)',cc2=p.sessionProgress[1].status==='done'?'var(--accent)':'var(--border)';
+  document.getElementById('profile-session-progress').innerHTML=`
+    <div class="card-title">Session progress</div>
+    <div style="display:flex;align-items:flex-start;padding:8px 0 4px">
+      ${p.sessionProgress.map((s,i)=>{
+        const sl = p.sessionList[i];
+        const meetHtml = sl && sl.meetUrl
+          ? `<a href="${sl.meetUrl}" target="_blank" style="font-size:10px;color:var(--info);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:3px;margin-top:3px;justify-content:center">
+               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2h4v4M14 2L8 8M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9"/></svg>
+               Meet
+             </a>`
+          : `<span style="font-size:10px;color:var(--border);margin-top:3px">No link</span>`;
+        const timeHtml = sl && sl.time
+          ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">${sl.time}</div>`
+          : '';
+        return `
+          <div style="flex:1;text-align:center">
+            <div style="display:flex;align-items:center">
+              ${i>0?`<div style="flex:1;height:2px;background:${i===1?cc:cc2};border-radius:1px;margin-top:-36px"></div>`:'<div style="flex:1"></div>'}
+              <div class="session-dot ${s.status}" style="width:42px;height:42px;font-size:15px;margin:0 auto">${s.num}</div>
+              ${i<2?`<div style="flex:1;height:2px;background:${i===0?cc:cc2};border-radius:1px;margin-top:-36px"></div>`:'<div style="flex:1"></div>'}
+            </div>
+            <div style="font-size:12px;font-weight:500;color:var(--text);margin-top:10px;padding:0 4px">${s.title}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${s.label}</div>
+            ${timeHtml}
+            <div style="margin-top:3px"><span class="badge ${s.status==='done'?'badge-green':s.status==='upcoming'?'badge-purple':'badge-gray'}">${s.status==='done'?'Completed':s.status==='upcoming'?'Upcoming':'Scheduled'}</span></div>
+            <div style="display:flex;justify-content:center">${meetHtml}</div>
+          </div>`;
+      }).join('')}
+    </div>
+  `;
+
+  // Merged board details card
+  const yn = v => v==='Yes'?'<span class="yn-yes">Yes</span>':v==='No'?'<span class="yn-no">No</span>':v;
+  const matchClass = p.careerMatch==='Strong'?'match-strong':p.careerMatch==='Moderate'?'match-moderate':'match-weak';
+  const urgencyClass = p.urgency==='High'?'kcard-urgency-high':p.urgency==='Medium'?'kcard-urgency-med':'kcard-urgency-low';
+  document.getElementById('profile-details').innerHTML = `
+    <div style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:12px">Contact & intake</div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px">
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Phone</div><div style="font-size:13px;color:var(--text)">${p.contact}</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Email</div><div style="font-size:13px;color:var(--text)">${p.email}</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Employment</div><div style="font-size:13px;color:var(--text)">${p.employment}</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Booking pref</div><div style="font-size:13px;color:var(--text)">${p.bookingPref}</div></div>
+      </div>
+    </div>
+    <div style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:12px">Target position</div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Industry</div><div style="font-size:13px;color:var(--text)">${p.industry}</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Target titles</div><div style="font-size:13px;color:var(--text)">${p.targetTitles}</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Urgency</div><div style="font-size:13px"><span class="kcard-tag ${urgencyClass}">${p.urgency}</span></div></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div>
+        <div class="card-title" style="margin-bottom:12px">Checklist</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">AI Career Coach</span>${yn(p.aiCoach)}</div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">CV Received</span>${yn(p.cvReceived)}</div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">LinkedIn Provided</span>${yn(p.linkedinProvided)}</div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">RIASEC Completed</span>${yn(p.riasecDone)}</div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">RIASEC Codes</span><span style="font-size:12px;color:var(--text);font-weight:500">${p.riasecCodes}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">Career match</span><span class="${matchClass}">${p.careerMatch}</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:12px">Programme status</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Stage</div><span class="badge badge-gray">${p.stage}</span></div>
+          <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px">Overall progress</div><div style="font-size:13px;color:var(--text)">${p.progressStatus}</div></div>
+          <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px">Outcome</div><div style="font-size:13px;color:var(--text)">${p.outcome}</div></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Fixed CAP checkboxes
+  const capItems = [
+    {id:`${id}_cap1`, label:'CAP 1st Session', subLabel:`Session 1 · ${p.sessionProgress[0].label}`},
+    {id:`${id}_cap2`, label:'CAP 2nd Session', subLabel:`Session 2 · ${p.sessionProgress[1].label}`},
+    {id:`${id}_cap3`, label:'CAP 3rd Session', subLabel:`Session 3 · ${p.sessionProgress[2].label}`}
+  ];
+  document.getElementById('profile-actions').innerHTML = capItems.map(a=>`
+    <div class="action-item" id="cap-wrap-${a.id}">
+      <div class="checkbox ${actionState[a.id]?'checked':''}" onclick="toggleProfileAction('${a.id}',this)" id="cb-${a.id}">
+        ${actionState[a.id]?'<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+      </div>
+      <div style="flex:1">
+        <div class="action-text ${actionState[a.id]?'done-text':''}" id="at-${a.id}">${a.label}</div>
+        <div class="action-due">${a.subLabel}</div>
+      </div>
+      ${actionState[a.id] ? '<span class="badge badge-green" style="flex-shrink:0">Done</span>' : '<span class="badge badge-gray" style="flex-shrink:0">Pending</span>'}
+    </div>
+  `).join('');
+
+  // Reset CAP generator
+  currentProfileId = id;
+  document.getElementById('cap-output-area').innerHTML = '';
+  document.getElementById('generate-cap-btn').disabled = true;
+  document.getElementById('file-chip').style.display = 'none';
+  document.getElementById('file-chip').innerHTML = '';
+  document.getElementById('transcript-paste').value = '';
+  currentTranscriptText = '';
+  currentTranscriptFile = null;
+  // Render saved CAP attachments for this profile
+  renderCAPAttachments(id);
+  // Reset resume upload for this profile
+  const resumeData = profileResumeStore[id];
+  if(resumeData) {
+    showResumeChip(resumeData.name, resumeData.url, resumeData.type);
+  } else {
+    document.getElementById('resume-zone').style.display = '';
+    document.getElementById('resume-chip').style.display = 'none';
+    document.getElementById('resume-chip').innerHTML = '';
+    document.getElementById('resume-preview').style.display = 'none';
+    document.getElementById('resume-preview').innerHTML = '';
+    document.getElementById('resume-file-input').value = '';
+  }
+  document.querySelectorAll('.page,.board-page').forEach(pg=>pg.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-profile').classList.add('active');
+  document.querySelectorAll('.nav-item')[1].classList.add('active');
+}
+
+function toggleProfileAction(actionId,el){
+  actionState[actionId]=!actionState[actionId];
+  el.classList.toggle('checked');
+  el.innerHTML=actionState[actionId]?'<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':'';
+  const t=document.getElementById('at-'+actionId);
+  if(t) t.classList.toggle('done-text',actionState[actionId]);
+  // refresh profile badge
+  const wrap=document.getElementById('cap-wrap-'+actionId);
+  if(wrap){
+    const badge=wrap.querySelector('.badge');
+    if(badge){badge.className=actionState[actionId]?'badge badge-green':'badge badge-gray';badge.textContent=actionState[actionId]?'Done':'Pending';}
+  }
+  // re-render dashboard CAP list to stay in sync
+  renderDashboard();
+}
+
+// ============ RESUME UPLOAD ============
+const profileResumeStore = {}; // stores {name, url, type} per profile id
+
+function handleResumeDragOver(e) {
   e.preventDefault();
-  const id  = e.dataTransfer.getData('text/plain');
-  const pip = getPipeline();
-  const lead = pip.find(p => p.id===id);
-  if (lead && lead.stage !== stage) { lead.stage = stage; set('cc_pipeline', pip); }
-  renderPipeline();
+  document.getElementById('resume-zone').classList.add('drag-over');
+}
+function handleResumeDragLeave() {
+  document.getElementById('resume-zone').classList.remove('drag-over');
+}
+function handleResumeDrop(e) {
+  e.preventDefault();
+  document.getElementById('resume-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) processResume(file);
+}
+function handleResumeSelect(e) {
+  const file = e.target.files[0];
+  if(file) processResume(file);
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
-function resetData() {
-  if (confirm('Reset all data to defaults? This will clear any changes you\'ve made.')) {
-    ['cc_coachees','cc_sessions','cc_actions','cc_pipeline'].forEach(k => localStorage.removeItem(k));
-    seedData();
-    nav('dashboard', document.querySelector('.nav-item'));
+function processResume(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const url = e.target.result;
+    const type = file.type;
+    profileResumeStore[currentProfileId] = {name: file.name, url, type};
+    showResumeChip(file.name, url, type);
+  };
+  reader.readAsDataURL(file);
+}
+
+function showResumeChip(name, url, type) {
+  const zone = document.getElementById('resume-zone');
+  const chip = document.getElementById('resume-chip');
+  const preview = document.getElementById('resume-preview');
+  zone.style.display = 'none';
+  chip.style.display = 'flex';
+  chip.className = 'resume-chip';
+  chip.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;color:var(--accent)"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h3"/><path d="M5 8h6M5 11h4"/></svg>
+    <span class="resume-chip-name">${name}</span>
+    <div class="resume-chip-actions">
+      <button class="resume-chip-btn" onclick="toggleResumePreview('${url}','${type}')">Preview</button>
+      <button class="resume-chip-btn remove" onclick="removeResume()">Remove</button>
+    </div>
+  `;
+  // Auto-show preview for PDFs
+  if(type === 'application/pdf') {
+    preview.style.display = 'block';
+    preview.innerHTML = `<iframe src="${url}" class="resume-preview-frame" title="Resume preview"></iframe>`;
+  } else {
+    preview.style.display = 'none';
+    preview.innerHTML = `<div style="padding:12px;background:var(--surface2);border-radius:var(--radius-sm);font-size:12px;color:var(--muted);text-align:center">${name} uploaded. PDF files show a preview inline.</div>`;
+    preview.style.display = 'block';
   }
 }
-if (!localStorage.getItem('cc_coachees')) seedData();
-renderDash();
+
+function toggleResumePreview(url, type) {
+  const preview = document.getElementById('resume-preview');
+  if(preview.style.display === 'none' || preview.innerHTML === '') {
+    if(type === 'application/pdf') {
+      preview.innerHTML = `<iframe src="${url}" class="resume-preview-frame" title="Resume preview"></iframe>`;
+    }
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function removeResume() {
+  if(currentProfileId) delete profileResumeStore[currentProfileId];
+  document.getElementById('resume-zone').style.display = '';
+  document.getElementById('resume-chip').style.display = 'none';
+  document.getElementById('resume-chip').innerHTML = '';
+  document.getElementById('resume-preview').style.display = 'none';
+  document.getElementById('resume-preview').innerHTML = '';
+  document.getElementById('resume-file-input').value = '';
+}
+
+// ============ CAP GENERATOR ============
+let currentProfileId = null;
+let currentTranscriptText = '';
+let currentTranscriptFile = null;
+
+function switchCapTab(tab, btn) {
+  document.querySelectorAll('.cap-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.cap-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cap-panel-'+tab).classList.add('active');
+  checkGenerateReady();
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+  document.getElementById('upload-zone').classList.remove('drag-over');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) processFile(file);
+}
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if(file) processFile(file);
+}
+
+function processFile(file) {
+  currentTranscriptFile = file;
+  const chip = document.getElementById('file-chip');
+  chip.style.display = 'flex';
+  chip.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0;color:var(--accent)"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h4"/></svg>
+    <span class="upload-file-name">${file.name}</span>
+    <button class="upload-remove" onclick="removeFile()">×</button>
+  `;
+  // Read text from file
+  if(file.type === 'text/plain' || file.name.endsWith('.txt')) {
+    const reader = new FileReader();
+    reader.onload = e => { currentTranscriptText = e.target.result; checkGenerateReady(); };
+    reader.readAsText(file);
+  } else {
+    // For pdf/doc, we'll use the filename as context and let the user know
+    currentTranscriptText = `[File uploaded: ${file.name}]`;
+    checkGenerateReady();
+  }
+}
+
+function removeFile() {
+  currentTranscriptFile = null;
+  currentTranscriptText = '';
+  document.getElementById('file-chip').style.display = 'none';
+  document.getElementById('file-chip').innerHTML = '';
+  document.getElementById('transcript-file').value = '';
+  checkGenerateReady();
+}
+
+function checkGenerateReady() {
+  const pasteActive = document.getElementById('cap-panel-paste').classList.contains('active');
+  const pasteText = document.getElementById('transcript-paste').value.trim();
+  const ready = pasteActive ? pasteText.length > 20 : currentTranscriptText.length > 0;
+  document.getElementById('generate-cap-btn').disabled = !ready;
+}
+
+document.addEventListener('input', function(e) {
+  if(e.target.id === 'transcript-paste') checkGenerateReady();
+});
+
+// Stores the last structured CAP JSON for PPTX export
+let lastCAPJson = null;
+
+async function generateCAP() {
+  const p = profiles[currentProfileId];
+  if(!p) return;
+
+  const pasteActive = document.getElementById('cap-panel-paste').classList.contains('active');
+  const transcriptContent = pasteActive
+    ? document.getElementById('transcript-paste').value.trim()
+    : currentTranscriptText;
+
+  const outputArea = document.getElementById('cap-output-area');
+  outputArea.innerHTML = `<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Generating Career Action Plan…</span></div>`;
+  document.getElementById('generate-cap-btn').disabled = true;
+  lastCAPJson = null;
+
+  const prompt = `You are a professional career coach assistant at Career Hub. Analyse the session summary and coachee profile below, then return a Career Action Plan as a single valid JSON object — no markdown, no preamble, no code fences, ONLY the raw JSON.
+
+COACHEE PROFILE:
+- Name: ${p.name}
+- Current Role: ${p.role}
+- Coaching Goal: ${p.goal}
+- Focus Areas: ${p.tags.join(', ')}
+- Sessions completed: ${p.sessionProgress.filter(s=>s.status==='done').length} of 3
+
+SESSION SUMMARY:
+${transcriptContent}
+
+Return ONLY this JSON structure (fill every field with real, specific content condensed from the summary — no placeholders):
+{
+  "client": "${p.name}",
+  "coach": "Sarah Chen",
+  "date": "[session date from summary or today]",
+  "duration": "[session duration, e.g. 60 min]",
+  "career_interests": ["interest 1", "interest 2", "interest 3"],
+  "value_proposition": "One to two sentences on unique value this person offers employers.",
+  "key_strengths": ["strength 1", "strength 2", "strength 3"],
+  "development_areas": ["area 1", "area 2", "area 3"],
+  "target_sectors": ["sector 1", "sector 2", "sector 3"],
+  "target_roles": ["role/title 1", "role/title 2", "role/title 3"],
+  "salary_range": "XXXX - XXXX SGD per month",
+  "goals": "Primary career objectives and aspirations from the session.",
+  "reality": "Current situation, challenges, and market position.",
+  "options": "Career paths, strategies, and opportunities identified.",
+  "way_forward": "Agreed approach and commitment to action.",
+  "coach_notes": "Any additional coach observations or notes.",
+  "quick_wins": ["Week 1-2 action 1", "Week 1-2 action 2", "Week 1-2 action 3"],
+  "active_preparation": ["Week 3–Month 1 action 1", "Week 3–Month 1 action 2", "Week 3–Month 1 action 3"],
+  "implementation_outreach": ["Month 1-2 action 1", "Month 1-2 action 2", "Month 1-2 action 3"],
+  "sustained_effort": ["Month 3-6 action 1", "Month 3-6 action 2", "Month 3-6 action 3"]
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.map(b=>b.text||'').join('') || '';
+
+    // Parse JSON — strip any accidental fences
+    const clean = raw.replace(/```json|```/g, '').trim();
+    let cap;
+    try {
+      cap = JSON.parse(clean);
+      lastCAPJson = cap;
+    } catch(e) {
+      throw new Error('AI returned invalid JSON. Please try again.');
+    }
+
+    // Render human-readable preview
+    const renderList = (arr) => arr && arr.length ? arr.map(i=>`<li style="margin-bottom:3px">${i}</li>`).join('') : '<li>—</li>';
+    const field = (label, val) => `<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:2px">${label}</div><div style="font-size:13px;color:var(--text)">${val}</div></div>`;
+
+    outputArea.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;margin-bottom:12px">
+        <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted)">Generated CAP — BCG Template</span>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-outline btn-sm" onclick="copyCAP()">Copy text</button>
+          <button class="btn btn-primary btn-sm" onclick="exportPPTX()" id="export-pptx-btn">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h4"/><path d="M8 8v5M5.5 10.5L8 13l2.5-2.5"/></svg>
+            Export PPTX
+          </button>
+        </div>
+      </div>
+      <div class="cap-output" id="cap-output-text">
+        <h3 style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:10px">Session Summary</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px;margin-bottom:12px">
+          ${field('Client', cap.client||'—')}
+          ${field('Coach', cap.coach||'—')}
+          ${field('Date', cap.date||'—')}
+          ${field('Duration', cap.duration||'—')}
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px">
+          <h3 style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:8px">Professional Profile</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+            <div>${field('Career Interests', '<ul style="padding-left:14px;margin:0">'+renderList(cap.career_interests)+'</ul>')}</div>
+            <div>${field('Value Proposition', cap.value_proposition||'—')}</div>
+            <div>${field('Key Strengths', '<ul style="padding-left:14px;margin:0">'+renderList(cap.key_strengths)+'</ul>')}</div>
+            <div>${field('Development Areas', '<ul style="padding-left:14px;margin:0">'+renderList(cap.development_areas)+'</ul>')}</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px">
+          <h3 style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:8px">Target Position</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px">
+            <div>${field('Sectors', '<ul style="padding-left:14px;margin:0">'+renderList(cap.target_sectors)+'</ul>')}</div>
+            <div>${field('Job Roles / Titles', '<ul style="padding-left:14px;margin:0">'+renderList(cap.target_roles)+'</ul>')}</div>
+            <div>${field('Salary Range', cap.salary_range||'—')}</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px">
+          <h3 style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:8px">Coaching Insights (GROW)</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+            ${field('Goals', cap.goals||'—')}
+            ${field('Reality', cap.reality||'—')}
+            ${field('Options', cap.options||'—')}
+            ${field('Way Forward', cap.way_forward||'—')}
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:10px">
+          <h3 style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:8px">Action Plan Timeline</h3>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px">
+              <div style="font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;margin-bottom:6px">Quick Wins<br><span style="font-weight:400;color:var(--muted)">Week 1–2</span></div>
+              <ul style="padding-left:14px;margin:0;font-size:12px">${renderList(cap.quick_wins)}</ul>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px">
+              <div style="font-size:10px;font-weight:600;color:var(--info);text-transform:uppercase;margin-bottom:6px">Active Prep<br><span style="font-weight:400;color:var(--muted)">Week 3–Month 1</span></div>
+              <ul style="padding-left:14px;margin:0;font-size:12px">${renderList(cap.active_preparation)}</ul>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px">
+              <div style="font-size:10px;font-weight:600;color:var(--purple);text-transform:uppercase;margin-bottom:6px">Implementation<br><span style="font-weight:400;color:var(--muted)">Month 1–2</span></div>
+              <ul style="padding-left:14px;margin:0;font-size:12px">${renderList(cap.implementation_outreach)}</ul>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px">
+              <div style="font-size:10px;font-weight:600;color:var(--warn);text-transform:uppercase;margin-bottom:6px">Sustained Effort<br><span style="font-weight:400;color:var(--muted)">Month 3–6</span></div>
+              <ul style="padding-left:14px;margin:0;font-size:12px">${renderList(cap.sustained_effort)}</ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  } catch(err) {
+    outputArea.innerHTML = `<div style="color:var(--danger);font-size:12px;padding:10px 0">Error: ${err.message}</div>`;
+  }
+  document.getElementById('generate-cap-btn').disabled = false;
+}
+
+// Stores exported CAP attachments per profile: {name, url, generatedAt}[]
+const profileCAPStore = {};
+
+function renderCAPAttachments(profileId) {
+  const el = document.getElementById('cap-attachments');
+  if(!el) return;
+  const attachments = profileCAPStore[profileId] || [];
+  if(attachments.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:12px">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:8px">Saved CAPs</div>
+      ${attachments.map((a,i) => `
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:6px">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5" style="flex-shrink:0"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h3"/></svg>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</div>
+            <div style="font-size:10px;color:var(--muted)">${a.generatedAt}</div>
+          </div>
+          <a href="${a.url}" download="${a.name}" style="font-size:11px;font-weight:500;color:var(--info);text-decoration:none;flex-shrink:0">Download</a>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+async function exportPPTX() {
+  if(!lastCAPJson) { alert('Generate a CAP first.'); return; }
+  const btn = document.getElementById('export-pptx-btn');
+  btn.textContent = 'Generating…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('http://localhost:5050/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lastCAPJson)
+    });
+
+    if(!res.ok) {
+      const err = await res.text();
+      throw new Error(err || `Server error ${res.status}`);
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const filename = `CAP_${(lastCAPJson.client||'Coachee').replace(/\s+/g,'_')}.pptx`;
+
+    // Trigger download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // Attach copy to coachee profile
+    if(currentProfileId) {
+      if(!profileCAPStore[currentProfileId]) profileCAPStore[currentProfileId] = [];
+      profileCAPStore[currentProfileId].push({
+        name: filename,
+        url: url,
+        generatedAt: new Date().toLocaleDateString('en-SG', {day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'})
+      });
+      renderCAPAttachments(currentProfileId);
+    }
+
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8l4 4 8-8"/></svg> Downloaded!';
+    setTimeout(()=>{ btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h4"/><path d="M8 8v5M5.5 10.5L8 13l2.5-2.5"/></svg> Export PPTX'; btn.disabled=false; }, 3000);
+  } catch(e) {
+    alert(`Export failed: ${e.message}\n\nMake sure cap_server.py is running:\n  python cap_server.py`);
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h4"/><path d="M8 8v5M5.5 10.5L8 13l2.5-2.5"/></svg> Export PPTX';
+    btn.disabled = false;
+  }
+}
+
+function copyCAP() {
+  const el = document.getElementById('cap-output-text');
+  if(!el) return;
+  navigator.clipboard.writeText(el.innerText).then(()=>{
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(()=>btn.textContent='Copy text', 2000);
+  });
+}
+function toggleCheck(el){el.classList.toggle('checked');el.innerHTML=el.classList.contains('checked')?'<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':'';}
+function filterCoachees(val){document.querySelectorAll('.coachee-row').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(val.toLowerCase())?'':'none';});}
+function filterStatus(status,btn){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+
+// ============ NOTION SYNC ============
+const SERVER = 'http://localhost:5050';
+
+async function checkNotionStatus() {
+  try {
+    const res = await fetch(`${SERVER}/notion/status`);
+    const data = await res.json();
+    const statusEl = document.getElementById('notion-sync-status');
+    if(statusEl) {
+      if(data.configured) {
+        statusEl.innerHTML = '<span style="color:var(--accent)">● Notion connected</span>';
+      } else {
+        statusEl.innerHTML = '<span style="color:var(--muted)">○ Notion not configured</span>';
+      }
+    }
+  } catch(e) {
+    const statusEl = document.getElementById('notion-sync-status');
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--muted)">○ Server offline</span>';
+  }
+}
+
+function showSyncBanner(msg, type) {
+  const banner = document.getElementById('notion-sync-banner');
+  if(!banner) return;
+  const styles = {
+    success: 'background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-light)',
+    error:   'background:var(--danger-light);color:var(--danger);border:1px solid var(--danger-light)',
+    loading: 'background:var(--surface2);color:var(--muted);border:1px solid var(--border)',
+  };
+  banner.style.cssText = `display:block;padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;margin-bottom:12px;${styles[type]||styles.loading}`;
+  banner.textContent = msg;
+  if(type !== 'loading') setTimeout(() => { banner.style.display = 'none'; }, 4000);
+}
+
+async function syncFromNotion() {
+  if(!currentProfileId) return;
+  const p = profiles[currentProfileId];
+  const btn = document.getElementById('notion-sync-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="animation:spin 1s linear infinite"><path d="M1 8A7 7 0 0114.5 5M15 8a7 7 0 01-13.5 3"/></svg> Syncing…';
+  showSyncBanner('Fetching latest data from Notion…', 'loading');
+
+  try {
+    const res = await fetch(`${SERVER}/notion/coachee?name=${encodeURIComponent(p.name)}`);
+    const data = await res.json();
+
+    if(!res.ok || data.error) {
+      throw new Error(data.error || `Server error ${res.status}`);
+    }
+
+    const n = data.coachee;
+
+    // Merge Notion data into the local profile object
+    const updates = {
+      role:           n.role           || p.role,
+      email:          n.email          || p.email,
+      contact:        n.contact        || p.contact,
+      stage:          n.stage          || p.stage,
+      status:         n.status         || p.status,
+      urgency:        n.urgency        || p.urgency,
+      employment:     n.employment     || p.employment,
+      industry:       n.industry       || p.industry,
+      targetTitles:   n.targetTitles   || p.targetTitles,
+      bookingPref:    n.bookingPref    || p.bookingPref,
+      assignedCoach:  n.assignedCoach  || p.assignedCoach,
+      goal:           n.goal           || p.goal,
+      progressStatus: n.progressStatus || p.progressStatus,
+      outcome:        n.outcome        || p.outcome,
+      priority:       n.priority       || p.priority,
+      risks:          n.risks          || p.risks,
+      riasecCodes:    n.riasecCodes    || p.riasecCodes,
+      careerMatch:    n.careerMatch    || p.careerMatch,
+      aiCoach:        n.aiCoach        || p.aiCoach,
+      cvReceived:     n.cvReceived     || p.cvReceived,
+      linkedinProvided: n.linkedinProvided || p.linkedinProvided,
+      riasecDone:     n.riasecDone     || p.riasecDone,
+      s1date:         n.s1date         || p.s1date,
+      s2date:         n.s2date         || p.s2date,
+      s3date:         n.s3date         || p.s3date,
+      tags:           n.tags?.length   ? n.tags : p.tags,
+      goals:          n.goals          || p.goals,
+      reality:        n.reality        || p.reality,
+      options:        n.options        || p.options,
+      wayForward:     n.wayForward     || p.wayForward,
+    };
+
+    // Merge session list if Notion returned sessions
+    if(n.sessionList && n.sessionList.length > 0) {
+      n.sessionList.forEach((ns, i) => {
+        if(p.sessionList[i]) {
+          if(ns.date)    p.sessionList[i].date    = ns.date;
+          if(ns.time)    p.sessionList[i].time    = ns.time;
+          if(ns.title)   p.sessionList[i].title   = ns.title;
+          if(ns.status)  p.sessionList[i].status  = ns.status;
+          if(ns.next)    p.sessionList[i].next     = ns.next;
+          if(ns.meetUrl) p.sessionList[i].meetUrl  = ns.meetUrl;
+          // sync session progress label
+          if(p.sessionProgress[i] && ns.date) p.sessionProgress[i].label = ns.date;
+          if(p.sessionProgress[i] && ns.title) p.sessionProgress[i].title = ns.title;
+        }
+      });
+    }
+
+    Object.assign(profiles[currentProfileId], updates);
+    showProfile(currentProfileId); // re-render with fresh data
+    showSyncBanner(`✓ Synced from Notion — ${new Date().toLocaleTimeString('en-SG', {hour:'2-digit', minute:'2-digit'})}`, 'success');
+
+  } catch(e) {
+    const isOffline = e.message.includes('fetch') || e.message.includes('Failed');
+    if(isOffline) {
+      showSyncBanner('cap_server.py is not running. Start it with: python cap_server.py', 'error');
+    } else {
+      showSyncBanner(`Sync failed: ${e.message}`, 'error');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 8A7 7 0 0114.5 5M15 8a7 7 0 01-13.5 3"/><path d="M13 2l2 3-3 1M3 14l-2-3 3-1"/></svg> Sync from Notion';
+    checkNotionStatus();
+  }
+}
+
+// Initial render
+renderDashboard();
+checkNotionStatus();
 </script>
 </body>
 </html>

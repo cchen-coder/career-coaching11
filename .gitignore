@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Logs
+Python/cap_server.log
+
+# Template (binary, distribute separately)
+Python/BCG_CAP_Template.pptx
+
+# Sensitive coachee data
+Data - Coachee/
+Notion Data/
+
+# Word docs (manage separately)
+*.docx
