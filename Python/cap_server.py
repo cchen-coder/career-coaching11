@@ -97,6 +97,60 @@ def notion_prop(page, name, default=""):
     return default
 
 
+def fetch_all_coachees_from_notion():
+    """Fetch all coachees from Notion and return a list of mapped profiles."""
+    all_pages = []
+    body = {"page_size": 100}
+    while True:
+        result = notion_request("POST", f"/databases/{NOTION_COACHEES_DB}/query", body)
+        all_pages.extend(result.get("results", []))
+        if not result.get("has_more"):
+            break
+        body["start_cursor"] = result["next_cursor"]
+
+    coachees = []
+    for p in all_pages:
+        tags = notion_prop(p, "Labels", [])
+        if isinstance(tags, str):
+            tags = [t.strip() for t in tags.split(",") if t.strip()]
+        coachees.append({
+            "notion_id":      p["id"],
+            "name":           notion_prop(p, "Name"),
+            "role":           notion_prop(p, "Role"),
+            "email":          notion_prop(p, "Email"),
+            "contact":        notion_prop(p, "Phone"),
+            "stage":          notion_prop(p, "Stage"),
+            "status":         notion_prop(p, "Status"),
+            "urgency":        notion_prop(p, "Urgency"),
+            "employment":     notion_prop(p, "Employment Status"),
+            "industry":       notion_prop(p, "Industry"),
+            "targetTitles":   notion_prop(p, "Target Job Titles"),
+            "bookingPref":    notion_prop(p, "Booking Preference"),
+            "assignedCoach":  notion_prop(p, "Assigned Coach"),
+            "goal":           notion_prop(p, "Coaching Goal"),
+            "progressStatus": notion_prop(p, "Overall Progress"),
+            "outcome":        notion_prop(p, "Outcome"),
+            "priority":       notion_prop(p, "Main Priority"),
+            "risks":          notion_prop(p, "Key Risks"),
+            "riasecCodes":    notion_prop(p, "RIASEC Codes"),
+            "careerMatch":    notion_prop(p, "Career Direction Match"),
+            "aiCoach":        notion_prop(p, "AI Career Coach"),
+            "cvReceived":     notion_prop(p, "CV Received"),
+            "linkedinProvided": notion_prop(p, "LinkedIn Provided"),
+            "riasecDone":     notion_prop(p, "RIASEC Completed"),
+            "s1date":         notion_prop(p, "Session 1 Date"),
+            "s2date":         notion_prop(p, "Session 2 Date"),
+            "s3date":         notion_prop(p, "Session 3 Date"),
+            "tags":           tags,
+            "start":          notion_prop(p, "Start Date"),
+            "goals":          notion_prop(p, "Goals (GROW)"),
+            "reality":        notion_prop(p, "Reality (GROW)"),
+            "options":        notion_prop(p, "Options (GROW)"),
+            "wayForward":     notion_prop(p, "Way Forward (GROW)"),
+        })
+    return coachees
+
+
 def fetch_coachee_from_notion(coachee_name):
     """Query Notion for a coachee by name and return mapped profile data."""
     body = {
@@ -446,6 +500,18 @@ class CAPHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
+        # GET /notion/coachees — return all coachees (must be before /notion/coachee)
+        if self.path == "/notion/coachees":
+            if not NOTION_TOKEN or not NOTION_COACHEES_DB:
+                self._json_response({"error": "Notion not configured."}, 503)
+                return
+            try:
+                coachees = fetch_all_coachees_from_notion()
+                self._json_response({"ok": True, "coachees": coachees})
+            except Exception as e:
+                self._json_response({"error": str(e)}, 500)
+            return
+
         # GET /notion/coachee?name=James+Lee
         if self.path.startswith("/notion/coachee"):
             if not NOTION_TOKEN or not NOTION_COACHEES_DB:

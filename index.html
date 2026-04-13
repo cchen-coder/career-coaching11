@@ -350,11 +350,7 @@ textarea.notes-field:focus{border-color:var(--text);}
     <button class="filter-btn" onclick="filterStatus('complete',this)">Complete</button>
   </div>
   <div class="coachee-list" id="coachee-list">
-    <div class="coachee-row" onclick="showProfile('james')"><div class="avatar" style="background:#F3F0FF;color:#5B21B6">JL</div><div class="coachee-main"><div class="coachee-row-name">James Lee</div><div class="coachee-row-role">Senior Engineer → Product Manager · Career pivot</div></div><span class="badge badge-purple">1 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot upcoming" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--border);border-radius:1px"></div><div class="session-dot empty" style="width:26px;height:26px;font-size:10px">3</div></div></div>
-    <div class="coachee-row" onclick="showProfile('maya')"><div class="avatar" style="background:#EAF0E1;color:#2D5016">MR</div><div class="coachee-main"><div class="coachee-row-name">Maya Reyes</div><div class="coachee-row-role">Marketing Manager · Promotion prep</div></div><span class="badge badge-green">3 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot done" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot done" style="width:26px;height:26px;font-size:10px">3</div></div></div>
-    <div class="coachee-row" onclick="showProfile('tom')"><div class="avatar" style="background:#FFFBEB;color:#92400E">TP</div><div class="coachee-main"><div class="coachee-row-name">Tom Park</div><div class="coachee-row-role">UX Designer · Job search strategy</div></div><span class="badge badge-amber">1 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot upcoming" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--border);border-radius:1px"></div><div class="session-dot empty" style="width:26px;height:26px;font-size:10px">3</div></div></div>
-    <div class="coachee-row" onclick="showProfile('priya')"><div class="avatar" style="background:#EFF6FF;color:#1E40AF">PS</div><div class="coachee-main"><div class="coachee-row-name">Priya Shah</div><div class="coachee-row-role">Engineering Team Lead · Leadership development</div></div><span class="badge badge-blue">2 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot done" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--border);border-radius:1px"></div><div class="session-dot empty" style="width:26px;height:26px;font-size:10px">3</div></div></div>
-    <div class="coachee-row" onclick="showProfile('aisha')"><div class="avatar" style="background:#EAF0E1;color:#2D5016">AN</div><div class="coachee-main"><div class="coachee-row-name">Aisha Noor</div><div class="coachee-row-role">Director, Product · Executive presence</div></div><span class="badge badge-purple">2 / 3 done</span><div style="display:flex;align-items:center;gap:5px"><div class="session-dot done" style="width:26px;height:26px;font-size:10px">1</div><div style="width:14px;height:2px;background:var(--accent);border-radius:1px"></div><div class="session-dot done" style="width:26px;height:26px;font-size:10px">2</div><div style="width:14px;height:2px;background:var(--border);border-radius:1px"></div><div class="session-dot upcoming" style="width:26px;height:26px;font-size:10px">3</div></div></div>
+    <div id="coachee-list-loading" style="padding:24px;text-align:center;color:var(--muted);font-size:13px">Loading coachees from Notion…</div>
   </div>
 </div>
 
@@ -1647,8 +1643,106 @@ async function syncFromNotion() {
   }
 }
 
+// ── Avatar colour palette (cycles by index) ─────────────────────────────────
+const AVATAR_COLOURS = [
+  {bg:'#F3F0FF',color:'#5B21B6'},{bg:'#EAF0E1',color:'#2D5016'},
+  {bg:'#FFFBEB',color:'#92400E'},{bg:'#EFF6FF',color:'#1E40AF'},
+  {bg:'#FFF0F0',color:'#991B1B'},{bg:'#F0FFF4',color:'#065F46'},
+  {bg:'#FDF4FF',color:'#6B21A8'},{bg:'#FFF7ED',color:'#9A3412'},
+];
+
+function notionCoacheeToProfile(n, idx) {
+  const initials = n.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  const palette = AVATAR_COLOURS[idx % AVATAR_COLOURS.length];
+  const s1 = n.s1date || '', s2 = n.s2date || '', s3 = n.s3date || '';
+  const done1 = !!s1, done2 = !!s2, done3 = !!s3;
+  const doneCount = [done1,done2,done3].filter(Boolean).length;
+  return {
+    initials, bg: palette.bg, color: palette.color,
+    name: n.name, role: n.role || '', goal: n.goal || '',
+    status: n.status || 'Active', start: n.start || '',
+    stage: n.stage || '', contact: n.contact || '',
+    email: n.email || '', employment: n.employment || '',
+    industry: n.industry || '',
+    targetTitles: Array.isArray(n.targetTitles) ? n.targetTitles.join(', ') : (n.targetTitles || ''),
+    urgency: n.urgency || '', bookingPref: Array.isArray(n.bookingPref) ? n.bookingPref.join(', ') : (n.bookingPref || ''),
+    assignedCoach: n.assignedCoach || '', progressStatus: n.progressStatus || '',
+    outcome: Array.isArray(n.outcome) ? n.outcome.join('; ') : (n.outcome || ''),
+    priority: n.priority || '', risks: n.risks || '',
+    riasecCodes: n.riasecCodes || '', careerMatch: n.careerMatch || '',
+    aiCoach: n.aiCoach || '', cvReceived: n.cvReceived || '',
+    linkedinProvided: n.linkedinProvided || '', riasecDone: n.riasecDone || '',
+    s1date: s1, s2date: s2, s3date: s3,
+    tags: Array.isArray(n.tags) ? n.tags : [],
+    goals: n.goals || '', reality: n.reality || '',
+    options: n.options || '', wayForward: n.wayForward || '',
+    sessionProgress: [
+      {num:1, label:s1||'TBC', status:done1?'done':'empty', title:'Session 1'},
+      {num:2, label:s2||'TBC', status:done2?'done':(done1?'upcoming':'empty'), title:'Session 2'},
+      {num:3, label:s3||'TBC', status:done3?'done':(done2?'upcoming':'empty'), title:'Session 3'},
+    ],
+    sessionList: [
+      {date:s1,time:'',title:'Session 1',status:done1?'done':'scheduled',next:'',meetUrl:''},
+      {date:s2,time:'',title:'Session 2',status:done2?'done':(done1?'upcoming':'scheduled'),next:'',meetUrl:''},
+      {date:s3,time:'',title:'Session 3',status:done3?'done':(done2?'upcoming':'scheduled'),next:'',meetUrl:''},
+    ],
+    _doneCount: doneCount,
+  };
+}
+
+function sessionDotBadge(p) {
+  const c = p._doneCount || 0;
+  const badgeClass = c===3?'badge-green':c>=1?'badge-purple':'badge-amber';
+  const dots = p.sessionProgress.map((s,i)=>{
+    const line = i>0?`<div style="width:14px;height:2px;background:${s.status==='done'?'var(--accent)':'var(--border)'};border-radius:1px"></div>`:'';
+    return `${line}<div class="session-dot ${s.status}" style="width:26px;height:26px;font-size:10px">${s.num}</div>`;
+  }).join('');
+  return `<span class="badge ${badgeClass}">${c} / 3 done</span><div style="display:flex;align-items:center;gap:5px">${dots}</div>`;
+}
+
+async function loadCoacheesFromNotion() {
+  const listEl = document.getElementById('coachee-list');
+  try {
+    const res = await fetch(`${SERVER}/notion/coachees`);
+    const data = await res.json();
+    if(!res.ok || data.error) throw new Error(data.error || 'Failed to load');
+
+    // Clear old profiles and rebuild from Notion
+    Object.keys(profiles).forEach(k => delete profiles[k]);
+    data.coachees.forEach((n, idx) => {
+      const key = n.name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+      profiles[key] = notionCoacheeToProfile(n, idx);
+    });
+
+    // Render coachee list
+    const rows = data.coachees.map((n, idx) => {
+      const key = n.name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+      const p = profiles[key];
+      return `<div class="coachee-row" onclick="showProfile('${key}')">
+        <div class="avatar" style="background:${p.bg};color:${p.color}">${p.initials}</div>
+        <div class="coachee-main">
+          <div class="coachee-row-name">${p.name}</div>
+          <div class="coachee-row-role">${p.role}${p.goal?' · '+p.goal:''}</div>
+        </div>
+        ${sessionDotBadge(p)}
+      </div>`;
+    }).join('');
+
+    listEl.innerHTML = rows || '<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px">No coachees found in Notion.</div>';
+
+    // Update subtitle count
+    const subtitle = document.querySelector('#page-coachees .page-subtitle');
+    if(subtitle) subtitle.textContent = `${data.coachees.length} coachees`;
+
+    renderDashboard();
+  } catch(e) {
+    listEl.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px">Could not load from Notion: ${e.message}<br><span style="font-size:11px">Make sure cap_server.py is running on port 5050.</span></div>`;
+    renderDashboard();
+  }
+}
+
 // Initial render
-renderDashboard();
+loadCoacheesFromNotion();
 checkNotionStatus();
 </script>
 </body>
