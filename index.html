@@ -985,43 +985,76 @@ function navigate(page) {
 
 function showProfile(id) {
   const p = profiles[id];
-  const completedCount = p.sessionProgress.filter(s=>s.status==='done').length;
 
-  // Header
-  document.getElementById('profile-header').innerHTML=`<div class="profile-avatar" style="background:${p.bg};color:${p.color}">${p.initials}</div><div style="flex:1"><div class="profile-name">${p.name}</div><div class="profile-role">${p.role}</div><div class="profile-tags">${p.tags.map(t=>`<span class="badge badge-gray">${t}</span>`).join('')}</div><div class="profile-meta" style="margin-top:12px"><div class="profile-meta-item"><strong>${completedCount} / 3</strong>Sessions done</div><div class="profile-meta-item"><strong>${p.start}</strong>Started</div><div class="profile-meta-item"><strong>${p.status}</strong>Status</div></div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">Coaching goal</div><div style="font-size:13px;font-weight:500;color:var(--text);max-width:200px">${p.goal}</div></div>`;
+  // Session progress — status derived live from date vs today
+  const today = new Date(); today.setHours(0,0,0,0);
 
-  // Session progress with date, time, meet URL under each dot
-  const cc=p.sessionProgress[0].status==='done'?'var(--accent)':'var(--border)',cc2=p.sessionProgress[1].status==='done'?'var(--accent)':'var(--border)';
+  function resolveSessionStatus(s, sl) {
+    // No date at all → Not Scheduled
+    const dateStr = sl?.date || s.label;
+    if(!dateStr || dateStr === '—' || dateStr === '') return 'not-scheduled';
+    // Parse date (e.g. "Mar 20", "Apr 10 2026")
+    const parsed = new Date(dateStr + (dateStr.match(/\d{4}/) ? '' : ' ' + today.getFullYear()));
+    parsed.setHours(0,0,0,0);
+    if(isNaN(parsed)) return 'not-scheduled';
+    if(parsed < today)  return 'done';       // past date → Completed
+    if(parsed.getTime() === today.getTime()) return 'upcoming'; // today → Upcoming
+    // Future date — check if a Meet URL exists (booked) or not
+    if(sl?.meetUrl) return 'upcoming';       // has Meet link → Scheduled/Upcoming
+    return 'scheduled';                       // future, no Meet → Scheduled
+  }
+
+  function sessionStatusLabel(status) {
+    if(status === 'done')          return {badge:'badge-green',  text:'Completed'};
+    if(status === 'upcoming')      return {badge:'badge-purple', text:'Upcoming'};
+    if(status === 'scheduled')     return {badge:'badge-gray',   text:'Scheduled'};
+    if(status === 'not-scheduled') return {badge:'badge-gray',   text:'Not Scheduled'};
+    return {badge:'badge-gray', text:'Not Scheduled'};
+  }
+
+  // Resolve live statuses for all 3 sessions
+  const liveStatuses = p.sessionProgress.map((s,i) => resolveSessionStatus(s, p.sessionList[i]));
+  const connColor = i => liveStatuses[i] === 'done' ? 'var(--accent)' : 'var(--border)';
+
   document.getElementById('profile-session-progress').innerHTML=`
     <div class="card-title">Session progress</div>
     <div style="display:flex;align-items:flex-start;padding:8px 0 4px">
       ${p.sessionProgress.map((s,i)=>{
         const sl = p.sessionList[i];
-        const meetHtml = sl && sl.meetUrl
-          ? `<a href="${sl.meetUrl}" target="_blank" style="font-size:10px;color:var(--info);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:3px;margin-top:3px;justify-content:center">
-               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2h4v4M14 2L8 8M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9"/></svg>
-               Meet
+        const liveStatus = liveStatuses[i];
+        const {badge, text} = sessionStatusLabel(liveStatus);
+        const dateLabel = sl?.date || s.label || '—';
+        const meetHtml = sl?.meetUrl
+          ? `<a href="${sl.meetUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;margin-top:5px;padding:4px 10px;border-radius:20px;background:var(--info-light);color:var(--info);font-size:10px;font-weight:600;text-decoration:none;border:1px solid #bfdbfe">
+               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="10" height="8" rx="1.5"/><path d="M11 7l4-2v6l-4-2"/></svg>
+               Join Meet
              </a>`
-          : `<span style="font-size:10px;color:var(--border);margin-top:3px">No link</span>`;
-        const timeHtml = sl && sl.time
+          : `<span style="display:inline-block;margin-top:5px;font-size:10px;color:var(--border)">${liveStatus==='not-scheduled'?'Not booked':'No link yet'}</span>`;
+        const timeHtml = (sl?.time && liveStatus !== 'not-scheduled')
           ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">${sl.time}</div>`
           : '';
         return `
           <div style="flex:1;text-align:center">
             <div style="display:flex;align-items:center">
-              ${i>0?`<div style="flex:1;height:2px;background:${i===1?cc:cc2};border-radius:1px;margin-top:-36px"></div>`:'<div style="flex:1"></div>'}
-              <div class="session-dot ${s.status}" style="width:42px;height:42px;font-size:15px;margin:0 auto">${s.num}</div>
-              ${i<2?`<div style="flex:1;height:2px;background:${i===0?cc:cc2};border-radius:1px;margin-top:-36px"></div>`:'<div style="flex:1"></div>'}
+              ${i>0?`<div style="flex:1;height:2px;background:${connColor(i-1)};border-radius:1px;margin-top:-36px"></div>`:'<div style="flex:1"></div>'}
+              <div class="session-dot ${liveStatus==='done'?'done':liveStatus==='upcoming'?'upcoming':'empty'}" style="width:42px;height:42px;font-size:15px;margin:0 auto">${s.num}</div>
+              ${i<2?`<div style="flex:1;height:2px;background:${connColor(i)};border-radius:1px;margin-top:-36px"></div>`:'<div style="flex:1"></div>'}
             </div>
             <div style="font-size:12px;font-weight:500;color:var(--text);margin-top:10px;padding:0 4px">${s.title}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px">${s.label}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${liveStatus==='not-scheduled'?'—':dateLabel}</div>
             ${timeHtml}
-            <div style="margin-top:3px"><span class="badge ${s.status==='done'?'badge-green':s.status==='upcoming'?'badge-purple':'badge-gray'}">${s.status==='done'?'Completed':s.status==='upcoming'?'Upcoming':'Scheduled'}</span></div>
+            <div style="margin-top:3px"><span class="badge ${badge}">${text}</span></div>
             <div style="display:flex;justify-content:center">${meetHtml}</div>
           </div>`;
       }).join('')}
     </div>
   `;
+
+  // Update completedCount based on live statuses
+  const liveCompletedCount = liveStatuses.filter(s=>s==='done').length;
+
+  // Header — uses liveCompletedCount from above
+  document.getElementById('profile-header').innerHTML=`<div class="profile-avatar" style="background:${p.bg};color:${p.color}">${p.initials}</div><div style="flex:1"><div class="profile-name">${p.name}</div><div class="profile-role">${p.role}</div><div class="profile-tags">${p.tags.map(t=>`<span class="badge badge-gray">${t}</span>`).join('')}</div><div class="profile-meta" style="margin-top:12px"><div class="profile-meta-item"><strong>${liveCompletedCount} / 3</strong>Sessions done</div><div class="profile-meta-item"><strong>${p.start}</strong>Started</div><div class="profile-meta-item"><strong>${p.status}</strong>Status</div></div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">Coaching goal</div><div style="font-size:13px;font-weight:500;color:var(--text);max-width:200px">${p.goal}</div></div>`;
 
   // Merged board details card
   const yn = v => v==='Yes'?'<span class="yn-yes">Yes</span>':v==='No'?'<span class="yn-no">No</span>':v;
@@ -1616,14 +1649,15 @@ async function syncFromNotion() {
     if(n.sessionList && n.sessionList.length > 0) {
       n.sessionList.forEach((ns, i) => {
         if(p.sessionList[i]) {
-          if(ns.date)    p.sessionList[i].date    = ns.date;
-          if(ns.time)    p.sessionList[i].time    = ns.time;
-          if(ns.title)   p.sessionList[i].title   = ns.title;
-          if(ns.status)  p.sessionList[i].status  = ns.status;
-          if(ns.next)    p.sessionList[i].next     = ns.next;
-          if(ns.meetUrl) p.sessionList[i].meetUrl  = ns.meetUrl;
-          // sync session progress label
-          if(p.sessionProgress[i] && ns.date) p.sessionProgress[i].label = ns.date;
+          if(ns.date)               p.sessionList[i].date   = ns.date;
+          if(ns.time)               p.sessionList[i].time   = ns.time;
+          if(ns.title)              p.sessionList[i].title  = ns.title;
+          if(ns.status)             p.sessionList[i].status = ns.status;
+          if(ns.next)               p.sessionList[i].next   = ns.next;
+          // Always sync meetUrl — even empty string clears a stale link
+          if(ns.meetUrl !== undefined) p.sessionList[i].meetUrl = ns.meetUrl;
+          // sync session progress label and title
+          if(p.sessionProgress[i] && ns.date)  p.sessionProgress[i].label = ns.date;
           if(p.sessionProgress[i] && ns.title) p.sessionProgress[i].title = ns.title;
         }
       });
